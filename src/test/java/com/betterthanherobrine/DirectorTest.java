@@ -62,7 +62,7 @@ public final class DirectorTest {
    check(restored.memory(id).chunks.equals(d.memory(id).chunks),"Persist exploration");
    check(restored.memory(id).nextEvent>=0&&restored.memory(id).nextEvent<=3600,"Rebase cooldown across restart");
    Path settings=dir.resolve("config.properties");cfg.preset("Nightmare");cfg.save(settings);
-   var loaded=HorrorConfig.load(settings);check(loaded.intensity==1.75,"Preset persistence");
+   var loaded=HorrorConfig.load(settings);check(loaded.intensity==1.85&&loaded.graceSeconds==0,"Nightmare preset persistence");
    loaded.intensity=Double.NaN;loaded.volume=2;loaded.validate();check(loaded.intensity==0&&loaded.volume==1,"Config clamps");
    Files.writeString(file,"format=1\n"+id+".age=oops\n");
    try{MemoryStore.load(file,restored,0);throw new AssertionError("Corrupt state accepted");}catch(java.io.IOException expected){checks++;}
