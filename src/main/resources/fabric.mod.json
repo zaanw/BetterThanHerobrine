@@ -4,5 +4,5 @@
  "description":"An adaptive, non-destructive psychological horror director.",
  "environment":"*",
  "entrypoints":{"main":["com.betterthanherobrine.core.BetterThanHerobrine"],"client":["com.betterthanherobrine.client.BetterThanHerobrineClient"]},
- "depends":{"fabricloader":">=0.20.1","minecraft":"~26.3","java":">=25","fabric-api":">=0.165.0"}
+ "depends":{"fabricloader":">=0.20.1","minecraft":"26.3","java":">=25","fabric-api":">=0.165.0"}
 }
