@@ -1,0 +1,23 @@
+{
+  "bth.help": "/bth help | status | debug | summon | event <id> | intensity <0..2> | reset",
+  "bth.busy": "Событие недоступно: отключено, неизвестно или достигнут лимит сцен.",
+  "bth.enable": "Включить хоррор",
+  "bth.sounds": "Атмосферные звуки",
+  "bth.volume": "Громкость хоррора",
+  "bth.visuals": "Визуальные эффекты",
+  "bth.fog": "Атмосферная дымка",
+  "bth.screen": "Экранные эффекты",
+  "bth.performance": "Режим производительности",
+  "bth.anomalies": "Аномалии мира",
+  "bth.intensity": "Интенсивность хоррора",
+  "bth.frequency": "Частота наблюдателя",
+  "key.betterthanherobrine.settings": "Настройки BetterThanHerobrine",
+  "key.category.betterthanherobrine.settings": "BetterThanHerobrine",
+  "entity.betterthanherobrine.watcher": "Наблюдатель",
+  "bth.subtitle.step": "Незнакомые шаги",
+  "bth.subtitle.stone": "Шорох камня",
+  "bth.subtitle.knock": "Тихий стук",
+  "bth.subtitle.door": "Вдалеке скрипит дверь",
+  "bth.subtitle.breath": "Неровное дыхание",
+  "bth.subtitle.whisper": "Неразборчивый шёпот"
+}

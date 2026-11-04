@@ -1,0 +1,92 @@
+{
+  "step": {
+    "subtitle": "bth.subtitle.step",
+    "sounds": [
+      {
+        "name": "betterthanherobrine:step_0",
+        "weight": 1,
+        "attenuation_distance": 48
+      },
+      {
+        "name": "betterthanherobrine:step_1",
+        "weight": 1,
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "stone": {
+    "subtitle": "bth.subtitle.stone",
+    "sounds": [
+      {
+        "name": "betterthanherobrine:stone_0",
+        "weight": 1,
+        "attenuation_distance": 48
+      },
+      {
+        "name": "betterthanherobrine:stone_1",
+        "weight": 1,
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "knock": {
+    "subtitle": "bth.subtitle.knock",
+    "sounds": [
+      {
+        "name": "betterthanherobrine:knock_0",
+        "weight": 1,
+        "attenuation_distance": 48
+      },
+      {
+        "name": "betterthanherobrine:knock_1",
+        "weight": 1,
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "door": {
+    "subtitle": "bth.subtitle.door",
+    "sounds": [
+      {
+        "name": "betterthanherobrine:door_0",
+        "weight": 1,
+        "attenuation_distance": 48
+      },
+      {
+        "name": "betterthanherobrine:door_1",
+        "weight": 1,
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "breath": {
+    "subtitle": "bth.subtitle.breath",
+    "sounds": [
+      {
+        "name": "betterthanherobrine:breath_0",
+        "weight": 1,
+        "attenuation_distance": 48
+      },
+      {
+        "name": "betterthanherobrine:breath_1",
+        "weight": 1,
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "whisper": {
+    "subtitle": "bth.subtitle.whisper",
+    "sounds": [
+      {
+        "name": "betterthanherobrine:whisper_0",
+        "weight": 1,
+        "attenuation_distance": 48
+      },
+      {
+        "name": "betterthanherobrine:whisper_1",
+        "weight": 1,
+        "attenuation_distance": 48
+      }
+    ]
+  }
+}

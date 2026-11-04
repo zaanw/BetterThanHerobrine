@@ -1,0 +1,23 @@
+{
+  "bth.help": "/bth help | status | debug | summon | event <id> | intensity <0..2> | reset",
+  "bth.busy": "Event unavailable: disabled, unknown ID, or active scene limit.",
+  "bth.enable": "Enable Horror",
+  "bth.sounds": "Atmospheric Sounds",
+  "bth.volume": "Horror Volume",
+  "bth.visuals": "Visual Effects",
+  "bth.fog": "Atmospheric Veil",
+  "bth.screen": "Screen Effects",
+  "bth.performance": "Performance Mode",
+  "bth.anomalies": "World Anomalies",
+  "bth.intensity": "Horror Intensity",
+  "bth.frequency": "Entity Frequency",
+  "key.betterthanherobrine.settings": "BetterThanHerobrine settings",
+  "key.category.betterthanherobrine.settings": "BetterThanHerobrine",
+  "entity.betterthanherobrine.watcher": "Watcher",
+  "bth.subtitle.step": "Unfamiliar footsteps",
+  "bth.subtitle.stone": "Stone shifts",
+  "bth.subtitle.knock": "A quiet knock",
+  "bth.subtitle.door": "A distant door creaks",
+  "bth.subtitle.breath": "Uneven breathing",
+  "bth.subtitle.whisper": "An indistinct whisper"
+}
