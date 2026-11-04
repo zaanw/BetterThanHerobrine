@@ -66,5 +66,5 @@ public final class SettingsScreen extends Screen {
   g.centeredText(font,title,width/2,18,0xffd4d0cf);
   super.extractRenderState(g,mx,my,delta);
  }
- @Override public void onClose(){BetterThanHerobrineClient.save();minecraft.setScreen(parent);}
+ @Override public void onClose(){BetterThanHerobrineClient.save();minecraft.gui.setScreen(parent);}
 }
