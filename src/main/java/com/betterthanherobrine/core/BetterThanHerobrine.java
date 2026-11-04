@@ -71,7 +71,7 @@ public final class BetterThanHerobrine implements ModInitializer {
   boolean forest=biome.is(Biomes.FOREST)||biome.is(Biomes.DARK_FOREST)||biome.is(Biomes.TAIGA)||biome.is(Biomes.OLD_GROWTH_PINE_TAIGA);
   return new Context(second,(second*20L)%24000L,!level.canSeeSky(p.blockPosition()),forest,level.isRaining(),level.isThundering(),
    residence.getOrDefault(p.getUUID(),0)>120,level.containsAnyLiquid(p.getBoundingBox().inflate(3)),
-   level.getMaxLocalRawBrightness(p.blockPosition()),nearby,((((long)p.chunkPosition().x)<<32) | (p.chunkPosition().z & 0xffffffffL)),p.getYRot(),moving,false);
+   level.getMaxLocalRawBrightness(p.blockPosition()),nearby,((((long)(p.blockPosition().getX() >> 4)) << 32) | ((p.blockPosition().getZ() >> 4) & 0xffffffffL)),p.getYRot(),moving,false);
  }
  private void tick(MinecraftServer server){
   if(++ticks%20!=0)return;second++;Map<UUID,Context> contexts=new LinkedHashMap<>();
