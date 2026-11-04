@@ -119,6 +119,32 @@ public final class BetterThanHerobrine implements ModInitializer {
    emit(player,Cue.effect(0,Cue.Kind.SYMBOL,.85f,20));
    emit(player,Cue.effect(0,Cue.Kind.SILENCE,.8f,16));
   }
+  // APOCALYPSE: relentless but bounded chaos after the intro.
+  // All effects expire, no blocks are modified, no uncontrolled mob swarms.
+  if(age>=96){
+   long phase=age-96;
+   if(phase%12==0){
+    lightning(player,phase%24==0?4:-4,phase%36==0?2:-2);
+    emit(player,Cue.effect(0,Cue.Kind.FOG,.9f,25));
+    emit(player,Cue.effect(0,Cue.Kind.TINT,.65f,8));
+    emit(player,Cue.sound(0,"whisper",-2,1,0,.8f));
+   }
+   if(phase%17==0){
+    emit(player,new Cue(0,Cue.Kind.PARTICLES,"shadow",3,0,1,.95f,15));
+    emit(player,Cue.sound(0,"step",-4,-1,0,.95f));
+    emit(player,Cue.effect(0,Cue.Kind.SYMBOL,.75f,12));
+   }
+   if(phase%28==0){
+    placement.clear(player.getUUID());
+    Vec3 forward=player.getLookAngle().scale(15);
+    placement.spawn(player,player.position().add(forward),23);
+    emit(player,Cue.sound(0,"breath",-3,0,1,.95f));
+   }
+   if(phase%43==0){
+    emit(player,Cue.effect(0,Cue.Kind.SILENCE,.95f,16));
+    emit(player,Cue.effect(0,Cue.Kind.FOG,1f,18));
+   }
+  }
  }
  private void lightning(ServerPlayer player,double offsetX,double offsetZ){
   ServerLevel level=(ServerLevel)player.level();
