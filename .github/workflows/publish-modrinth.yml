@@ -44,14 +44,24 @@ jobs:
             exit 1
           fi
           find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' -type f -exec cp '{}' dist/BetterThanHerobrine.jar \;
+      - name: Read mod version
+        id: mod_version
+        shell: bash
+        run: |
+          version=$(sed -n 's/^version=//p' gradle.properties | head -n 1 | tr -d '\r')
+          if [ -z "$version" ]; then
+            echo "::error::Missing version in gradle.properties"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
       - name: Publish on Modrinth
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: ${{ vars.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           files: dist/BetterThanHerobrine.jar
-          name: BetterThanHerobrine 0.1.${{ github.run_number }} (Minecraft 26.3)
-          version: 0.1.${{ github.run_number }}+26.3
+          name: BetterThanHerobrine ${{ steps.mod_version.outputs.version }} (Minecraft 26.3)
+          version: ${{ steps.mod_version.outputs.version }}
           version-type: beta
           changelog: |
             Automatic Minecraft 26.3 Fabric build from commit ${{ github.sha }}.
