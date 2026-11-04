@@ -30,7 +30,7 @@ public final class BetterThanHerobrineClient implements ClientModInitializer {
   var key=KeyMappingHelper.registerKeyMapping(new KeyMapping("key.betterthanherobrine.settings",InputConstants.Type.KEYBOARD,SDLScancode.SDL_SCANCODE_H,category));
   ClientTickEvents.END_CLIENT_TICK.register(client->{
    ATMOSPHERE.tick(config);
-   while(key.consumeClick())if(client.screen==null)client.setScreen(new SettingsScreen(null));
+   while(key.consumeClick())if(client.gui.screen()==null)client.gui.setScreen(new SettingsScreen(null));
   });
   HudElementRegistry.addLast(BetterThanHerobrine.id("atmosphere"),(graphics,tracker)->ATMOSPHERE.draw(graphics));
  }
