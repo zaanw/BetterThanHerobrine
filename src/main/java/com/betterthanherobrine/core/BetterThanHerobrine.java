@@ -95,6 +95,26 @@ public final class BetterThanHerobrine implements ModInitializer {
  }
  /** Deterministic server-side opening scene, counted in seconds spent inside a world. */
  private void nightmareSequence(ServerPlayer player,long age){
+  // The first few seconds are intentionally unsettling; effects stay bounded.
+  if(age==2){
+   emit(player,Cue.sound(0,"whisper",-2,0,1,.95f));
+   emit(player,Cue.effect(0,Cue.Kind.TINT,.8f,9));
+   emit(player,Cue.effect(0,Cue.Kind.FOG,.9f,22));
+  }
+  if(age==5){
+   lightning(player,3,2);
+   emit(player,Cue.sound(0,"stone",-4,1,0,.9f));
+  }
+  if(age==9){
+   Vec3 behind=player.getLookAngle().scale(-13);
+   placement.spawn(player,player.position().add(behind),35);
+   emit(player,new Cue(0,Cue.Kind.PARTICLES,"shadow",-2,0,1,.9f,15));
+  }
+  if(age>=12&&age<60&&age%11==0){
+   lightning(player,age%2==0?4:-4,3);
+   emit(player,Cue.effect(0,Cue.Kind.TINT,.5f,5));
+   emit(player,Cue.sound(0,"step",-3,1,0,.7f));
+  }
   if(age==60){
    player.sendSystemMessage(Component.translatable("multiplayer.player.joined",Component.literal("Herobrine")));
    lightning(player,0,0);
@@ -145,6 +165,17 @@ public final class BetterThanHerobrine implements ModInitializer {
     emit(player,Cue.effect(0,Cue.Kind.FOG,1f,18));
    }
   }
+ }
+ public void adminChaos(ServerPlayer player){
+  if(!config.enabled)return;
+  lightning(player,4,3);
+  lightning(player,-5,-2);
+  emit(player,Cue.effect(0,Cue.Kind.FOG,.95f,35));
+  emit(player,Cue.effect(0,Cue.Kind.TINT,.85f,12));
+  emit(player,new Cue(0,Cue.Kind.PARTICLES,"shadow",3,0,1,.9f,20));
+  emit(player,Cue.sound(0,"whisper",-2,0,0,.9f));
+  placement.clear(player.getUUID());
+  placement.spawn(player,player.position().add(player.getLookAngle().scale(-14)),35);
  }
  private void lightning(ServerPlayer player,double offsetX,double offsetZ){
   ServerLevel level=(ServerLevel)player.level();
