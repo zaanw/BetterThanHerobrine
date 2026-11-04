@@ -49,7 +49,7 @@ public final class BetterThanHerobrine implements ModInitializer {
   INSTANCE=this;
   try{config=HorrorConfig.load(configPath());}catch(IOException e){throw new IllegalStateException("Cannot load BTH server configuration",e);}
   director=new HorrorDirector(config,new Random());
-  PayloadTypeRegistry.playS2C().register(CuePayload.TYPE,CuePayload.CODEC);
+  PayloadTypeRegistry.clientboundPlay().register(CuePayload.TYPE,CuePayload.CODEC);
   BthCommands.register(this);
   ServerLifecycleEvents.SERVER_STARTED.register(server->{
    second=0;ticks=0;director.clear();lastPosition.clear();residence.clear();dimensions.clear();
@@ -69,9 +69,9 @@ public final class BetterThanHerobrine implements ModInitializer {
   int nearby=0;for(ServerPlayer other:level.players())if(other!=p&&other.distanceToSqr(p)<48*48&&!other.isSpectator()&&++nearby>=8)break;
   var biome=level.getBiome(p.blockPosition());
   boolean forest=biome.is(Biomes.FOREST)||biome.is(Biomes.DARK_FOREST)||biome.is(Biomes.TAIGA)||biome.is(Biomes.OLD_GROWTH_PINE_TAIGA);
-  return new Context(second,level.getDayTime(),!level.canSeeSky(p.blockPosition()),forest,level.isRaining(),level.isThundering(),
+  return new Context(second,(second*20L)%24000L,!level.canSeeSky(p.blockPosition()),forest,level.isRaining(),level.isThundering(),
    residence.getOrDefault(p.getUUID(),0)>120,level.containsAnyLiquid(p.getBoundingBox().inflate(3)),
-   level.getMaxLocalRawBrightness(p.blockPosition()),nearby,p.chunkPosition().toLong(),p.getYRot(),moving,p.swinging);
+   level.getMaxLocalRawBrightness(p.blockPosition()),nearby,((((long)p.chunkPosition().x)<<32) | (p.chunkPosition().z & 0xffffffffL)),p.getYRot(),moving,false);
  }
  private void tick(MinecraftServer server){
   if(++ticks%20!=0)return;second++;Map<UUID,Context> contexts=new LinkedHashMap<>();
