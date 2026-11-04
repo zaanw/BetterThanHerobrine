@@ -19,3 +19,6 @@ tasks.register('directorTest', JavaExec) {
  enableAssertions = true
 }
 check.dependsOn directorTest
+
+// The project uses the standalone directorTest JavaExec verification rather than JUnit tests.
+tasks.named('test', Test) { failOnNoDiscoveredTests = false }
