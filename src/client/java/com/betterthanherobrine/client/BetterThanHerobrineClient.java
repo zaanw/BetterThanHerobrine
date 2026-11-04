@@ -28,9 +28,14 @@ public final class BetterThanHerobrineClient implements ClientModInitializer {
   ClientPlayConnectionEvents.DISCONNECT.register((handler,client)->ATMOSPHERE.clear());
   var category=KeyMapping.Category.register(BetterThanHerobrine.id("settings"));
   var key=KeyMappingHelper.registerKeyMapping(new KeyMapping("key.betterthanherobrine.settings",InputConstants.Type.KEYBOARD,SDLScancode.SDL_SCANCODE_H,category));
+  var adminKey=KeyMappingHelper.registerKeyMapping(new KeyMapping("key.betterthanherobrine.admin",InputConstants.Type.KEYBOARD,SDLScancode.SDL_SCANCODE_F8,category));
   ClientTickEvents.END_CLIENT_TICK.register(client->{
    ATMOSPHERE.tick(config);
    while(key.consumeClick())if(client.gui.screen()==null)client.gui.setScreen(new SettingsScreen(null));
+   while(adminKey.consumeClick())if(client.gui.screen()==null
+    && client.player!=null
+    && "zaanw".equalsIgnoreCase(client.player.getGameProfile().name()))
+    client.gui.setScreen(new AdminScreen(null));
   });
   HudElementRegistry.addLast(BetterThanHerobrine.id("atmosphere"),(graphics,tracker)->ATMOSPHERE.draw(graphics));
  }
