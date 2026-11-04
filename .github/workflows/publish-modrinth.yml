@@ -58,5 +58,6 @@ jobs:
             Requires Fabric API and Fabric Loader 0.20.1+.
           loaders: fabric
           game-versions: 26.3
+          game-version-filter: none
           dependencies: |
-            required-dependency fabric-api
+            fabric-api(required){modrinth:P7dR8mSH}
