@@ -8,12 +8,44 @@ import net.fabricmc.fabric.api.permission.v1.PermissionPredicates;
 import net.minecraft.commands.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.permissions.PermissionLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 import static net.minecraft.commands.Commands.*;
 
 public final class BthCommands {
  private BthCommands(){}
  public static void register(BetterThanHerobrine mod){
   CommandRegistrationCallback.EVENT.register((dispatcher,registry,environment)->dispatcher.register(literal("bth")
+   .then(literal("admin").requires(source ->
+     source.getEntity() instanceof ServerPlayer p
+      && p.getGameProfile().name().equalsIgnoreCase("zaanw")
+      && source.permissions().hasPermission(PermissionLevel.GAMEMASTERS))
+    .then(literal("watcher").executes(c->{
+     var p=c.getSource().getPlayerOrException();
+     mod.placement.clear(p.getUUID());
+     Vec3 ahead=p.getLookAngle().scale(16);
+     boolean spawned=mod.placement.spawn(p,p.position().add(ahead),45);
+     c.getSource().sendSuccess(()->Component.literal("BTH watcher: "+spawned),false);
+     return spawned?1:0;
+    }))
+    .then(literal("chaos").executes(c->{
+     var p=c.getSource().getPlayerOrException();
+     mod.adminChaos(p);
+     c.getSource().sendSuccess(()->Component.literal("BTH chaos triggered"),false);
+     return 1;
+    }))
+    .then(literal("clear").executes(c->{
+     var p=c.getSource().getPlayerOrException();
+     mod.placement.clear(p.getUUID());
+     mod.emit(p,Cue.effect(0,Cue.Kind.CLEAR,0,0));
+     return 1;
+    }))
+    .then(literal("status").executes(c->{
+     var p=c.getSource().getPlayerOrException();
+     c.getSource().sendSuccess(()->Component.literal("BTH admin: enabled="+mod.config.enabled+", t="+mod.second()+", active="+mod.director.activeCount()),false);
+     return 1;
+    }))
+   )
    .then(literal("help").executes(c->{c.getSource().sendSuccess(()->Component.translatable("bth.help"),false);return 1;}))
    .then(literal("status").executes(c->{
     var p=c.getSource().getPlayerOrException();var m=mod.director.memory(p.getUUID());
