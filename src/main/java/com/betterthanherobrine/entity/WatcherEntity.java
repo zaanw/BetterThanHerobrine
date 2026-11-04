@@ -10,7 +10,7 @@ public final class WatcherEntity extends Zombie {
  private int expiresAt;
  private int watchPatience=100;
  public WatcherEntity(EntityType<? extends Zombie> type,Level level){
-  super(type,level);setCanPickUpLoot(false);setInvulnerable(true);setSilent(true);expiresAt=200;
+  super(type,level);setCanPickUpLoot(false);setSilent(true);expiresAt=200;
  }
  public int watchPatience(){return watchPatience;}
  public void bind(UUID player,int seconds){watchPatience=seconds>=120?seconds*20:100;observer=player;expiresAt=tickCount+Math.clamp(seconds,1,180)*20;}
