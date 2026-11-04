@@ -148,8 +148,10 @@ public final class BetterThanHerobrine implements ModInitializer {
  }
  private void lightning(ServerPlayer player,double offsetX,double offsetZ){
   ServerLevel level=(ServerLevel)player.level();
-  var bolt=EntityType.LIGHTNING_BOLT.create(level,EntitySpawnReason.TRIGGERED);
-  if(bolt==null)return;
+  var lightningType=BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.fromNamespaceAndPath("minecraft","lightning_bolt"));
+  if(lightningType==null)return;
+  var entity=lightningType.create(level,EntitySpawnReason.TRIGGERED);
+  if(!(entity instanceof LightningBolt bolt))return;
   bolt.setVisualOnly(true);
   bolt.snapTo(player.getX()+offsetX,player.getY(),player.getZ()+offsetZ);
   level.addFreshEntity(bolt);
