@@ -44,7 +44,32 @@ public final class Events {
    effect(0,SILENCE,.85f,35),sound(24,"breath",-2,0,0,.2f)),
   scene("the_encounter",NIGHTMARE,7200,1,true,c->c.night()&&c.thunder()&&c.nearbyPlayers()==0,
    effect(0,FOG,.75f,90),effect(0,SILENCE,.7f,80),watcher(12,16,0,60),
-   sound(30,"whisper",-4,2,0,.3f),effect(45,TINT,.4f,18),new Cue(60,SYMBOL,"cross",8,0,1,.6f,20))
+   sound(30,"whisper",-4,2,0,.3f),effect(45,TINT,.4f,18),new Cue(60,SYMBOL,"cross",8,0,1,.6f,20)),
+  scene("the_observer",UNEASY,480,7,false,c->!c.underground(),
+   actor(0,"observer",25,5,32),sound(14,"rustle",23,6,0,.2f)),
+  scene("the_window",WATCHED,720,5,false,c->c.night()&&c.window(),
+   sound(0,"knock",6,0,1,.25f),actor(3,"window",9,0,30),sound(19,"rustle",9,0,0,.2f)),
+  scene("silent_village",WATCHED,1000,4,false,Context::village,
+   effect(0,SILENCE,.7f,40),actor(10,"observer",24,-7,22),sound(28,"door",-20,0,0,.3f)),
+  scene("doppelganger",DISTURBED,1200,3,false,c->!c.underground()&&c.nearbyPlayers()==0,
+   actor(0,"doppelganger",28,12,45),sound(13,"step",28,12,0,.3f),effect(26,DISTORT,.18f,5)),
+  scene("cave_visitor",WATCHED,700,6,false,c->c.underground()&&c.height()<24,
+   sound(0,"rustle",18,0,-1,.35f),sound(8,"drone",18,0,0,.2f),actor(13,"approach",18,0,40)),
+  scene("the_return",WATCHED,1100,3,false,c->true,
+   actor(0,"observer",24,12,14),effect(12,VANISH,0,0),sound(21,"step",-12,-8,0,.3f),actor(27,"observer",-22,-9,25)),
+  scene("the_approach",DISTURBED,1000,3,false,c->c.nearbyPlayers()==0,
+   actor(0,"approach",30,1,55),sound(16,"breath",12,1,0,.2f)),
+  scene("stolen_rhythm",UNEASY,400,8,false,c->c.mining(),
+   sound(0,"knock",-6,1,0,.3f),sound(3,"knock",-6,1,0,.25f),sound(9,"knock",-6,1,0,.3f),new Cue(10,PARTICLES,"dust",-6,1,1,.3f,6)),
+  scene("held_breath",WATCHED,600,6,false,c->!c.moving()&&c.nearbyPlayers()==0,
+   effect(0,SILENCE,.5f,20),sound(6,"breath",-1,0,1,.15f),effect(10,DISTORT,.15f,7)),
+  scene("hollow_ground",UNEASY,420,6,false,c->!c.underground(),
+   sound(0,"stone",0,0,-5,.35f),sound(7,"drone",1,0,-8,.2f),new Cue(9,PARTICLES,"dust",0,0,0,.3f,8)),
+  scene("the_threshold",WATCHED,650,5,false,c->c.nearBase(),
+   sound(0,"door",8,0,0,.3f),actor(6,"observer",12,4,22),effect(18,VANISH,0,0)),
+  scene("the_haunting",NORMAL,600,1,false,c->true,
+   sound(0,"step",-4,1,0,.45f),sound(3,"knock",5,0,0,.35f),
+   new Cue(7,JOIN,"",0,0,0,0,0),sound(11,"rustle",-7,-3,0,.3f),actor(17,"observer",21,-7,22))
  );
  public static Optional<HorrorEvent> find(String id){return ALL.stream().filter(e->e.id().equals(id)).findFirst();}
 }

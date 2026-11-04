@@ -8,6 +8,7 @@ import java.util.EnumSet;
 public final class WatcherGoal extends Goal {
  private final WatcherEntity entity;
  private int noticed,steps;
+ private boolean seen;
  public WatcherGoal(WatcherEntity entity){this.entity=entity;setFlags(EnumSet.of(Flag.MOVE,Flag.LOOK));}
  @Override public boolean canUse(){return entity.observer()!=null;}
  @Override public void tick(){
@@ -18,8 +19,20 @@ public final class WatcherGoal extends Goal {
   double distance=entity.distanceToSqr(p);
   Vec3 toward=entity.position().subtract(p.getEyePosition()).normalize();
   boolean watched=p.getLookAngle().dot(toward)>.96&&p.hasLineOfSight(entity);
+  if(watched)seen=true;
+  if(seen&&!watched&&(entity.behavior()==WatcherEntity.Behavior.OBSERVER||entity.behavior()==WatcherEntity.Behavior.WINDOW)){entity.discard();return;}
   if(watched)noticed+=5;else noticed=Math.max(0,noticed-2);
   if(distance<64||noticed>entity.watchPatience()){entity.discard();return;}
+  if(!watched&&steps%20==0&&distance>144&&entity.behavior()==WatcherEntity.Behavior.APPROACH){
+   entity.getNavigation().moveTo(p,.4);return;
+  }
+  if(steps%30==0&&entity.behavior()==WatcherEntity.Behavior.DOPPELGANGER){
+   Vec3 side=new Vec3(-toward.z,0,toward.x).scale(Math.sin(steps*.13)*4);
+   Vec3 target=entity.position().add(side);
+   if(entity.level().hasChunkAt(net.minecraft.core.BlockPos.containing(target)))entity.getNavigation().moveTo(target.x,target.y,target.z,.45);
+   return;
+  }
+  if(entity.behavior()==WatcherEntity.Behavior.OBSERVER||entity.behavior()==WatcherEntity.Behavior.WINDOW){entity.getNavigation().stop();return;}
   if(watched&&noticed>=20&&steps%20==0){
    Vec3 away=entity.position().subtract(p.position()).normalize();
    // A short path request uses vanilla collision/navigation and stays in already loaded terrain.

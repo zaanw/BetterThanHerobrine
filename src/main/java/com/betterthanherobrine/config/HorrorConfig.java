@@ -7,14 +7,16 @@ import java.util.Properties;
 /** Local preferences and server policy use different files. No network credentials or personal data. */
 public final class HorrorConfig {
  public boolean enabled=true, worldAnomalies=true, atmosphericSounds=true, visualEffects=true,
-  screenEffects=true, performanceMode=false, debug=false;
+  screenEffects=true, reducedVisuals=false, performanceMode=false, debug=false;
  public double intensity=1, entityFrequency=1, fogIntensity=.45, volume=.65;
- public int maxActiveEvents=4, graceSeconds=600;
+ public int maxActiveEvents=4, graceSeconds=20;
  public void preset(String name) {
-  // Nightmare is the only playable preset; old config values are migrated on load.
-  intensity=1.85; entityFrequency=1.85; fogIntensity=.8; volume=.85;
-  enabled=true; atmosphericSounds=true; visualEffects=true; screenEffects=true;
-  worldAnomalies=true; graceSeconds=0;
+  switch(name){
+   case "Low" -> {intensity=.55;entityFrequency=.5;fogIntensity=.2;volume=.4;}
+   case "High" -> {intensity=1.35;entityFrequency=1.3;fogIntensity=.6;volume=.75;}
+   case "Nightmare" -> {intensity=1.85;entityFrequency=1.85;fogIntensity=.8;volume=.85;}
+   default -> {intensity=1;entityFrequency=1;fogIntensity=.45;volume=.65;}
+  }
  }
  public void validate() {
   intensity=bounded(intensity,0,2); entityFrequency=bounded(entityFrequency,0,2);
@@ -23,7 +25,7 @@ public final class HorrorConfig {
  }
  private static double bounded(double n,double lo,double hi) { return Double.isFinite(n)?Math.clamp(n,lo,hi):lo; }
  public static HorrorConfig load(Path file) throws IOException {
-  var c=new HorrorConfig(); if (!Files.exists(file)) { c.preset("Nightmare"); c.save(file); return c; }
+  var c=new HorrorConfig(); if (!Files.exists(file)) { c.save(file); return c; }
   var p=new Properties(); try(var in=Files.newInputStream(file)){p.load(in);}
   for(var f:HorrorConfig.class.getFields()) try {
    String s=p.getProperty(f.getName()); if(s==null)continue;
@@ -31,7 +33,7 @@ public final class HorrorConfig {
    if(f.getType()==double.class) f.setDouble(c,Double.parseDouble(s));
    if(f.getType()==int.class) f.setInt(c,Integer.parseInt(s));
   } catch(ReflectiveOperationException|NumberFormatException e) { throw new IOException("Invalid config field "+f.getName(),e); }
-  c.validate();c.preset("Nightmare");return c;
+  c.validate();return c;
  }
  public void save(Path file) throws IOException {
   validate();var p=new Properties();

@@ -15,8 +15,10 @@ public final class ClientAtmosphere {
  private final List<HorrorSound> sounds=new ArrayList<>();
  private long tick;
  private String dimension="";
- private double lastDuck;
- public double tint,haze,silence;
+
+ public double tint,haze,distortion;
+ public volatile double silence;
+ private final AmbientMixer mixer=new AmbientMixer();
  public void accept(CuePayload p,HorrorConfig c){
   var mc=Minecraft.getInstance();
   if(mc.level==null||!mc.level.dimension().identifier().toString().equals(p.dimension()))return;
@@ -37,15 +39,17 @@ public final class ClientAtmosphere {
   String now=mc.level==null?"":mc.level.dimension().identifier().toString();
   if(!now.equals(dimension)||!c.enabled||mc.player==null||!mc.player.isAlive()){clear();dimension=now;return;}
   effects.removeIf(e->tick>=e.end);sounds.removeIf(HorrorSound::isStopped);
-  double targetTint=0,targetHaze=0,targetSilence=0;int particles=0;
+  double targetTint=0,targetHaze=0,targetSilence=0,targetDistortion=0;int particles=0;
   for(var e:effects){
    var p=e.packet;double fade=Math.min(1,(tick-e.start)/30.0)*Math.min(1,(e.end-tick)/40.0)*p.strength();
+   double visual=fade*(c.reducedVisuals?.3:1);
    switch(p.kind()){
-    case TINT -> {if(c.visualEffects&&c.screenEffects)targetTint=Math.max(targetTint,fade);}
-    case FOG -> {if(c.visualEffects)targetHaze=Math.max(targetHaze,fade*c.fogIntensity);}
+    case TINT -> {if(c.visualEffects&&c.screenEffects)targetTint=Math.max(targetTint,visual);}
+    case FOG -> {if(c.visualEffects)targetHaze=Math.max(targetHaze,visual*c.fogIntensity);}
+    case DISTORT -> {if(c.visualEffects&&c.screenEffects)targetDistortion=Math.max(targetDistortion,visual);}
     case SILENCE -> {if(c.atmosphericSounds)targetSilence=Math.max(targetSilence,fade);}
     case PARTICLES, SYMBOL -> {
-     if(!c.visualEffects||mc.level==null||mc.player==null||particles>=(c.performanceMode?2:8)||tick%4!=0)break;
+     if(!c.visualEffects||mc.level==null||mc.player==null||particles>=(c.performanceMode||c.reducedVisuals?2:8)||tick%4!=0)break;
      Vec3 origin=new Vec3(p.x(),p.y(),p.z());if(mc.player.position().distanceToSqr(origin)>96*96)break;
      if(p.kind()==Cue.Kind.SYMBOL){
       // Particle cross: no fake block, no structure replacement, no saved-world changes.
@@ -58,30 +62,28 @@ public final class ClientAtmosphere {
       mc.level.addParticle(type,origin.x+(random.nextDouble()-.5)*3,origin.y+random.nextDouble()*2,origin.z+(random.nextDouble()-.5)*3,0,.005,0);particles++;
      }
     }
-    case SOUND, ENTITY, CLEAR -> throw new IllegalStateException("Nonvisual cue in effect queue");
+    case SOUND, ENTITY, CLEAR, JOIN, VANISH -> throw new IllegalStateException("Nonvisual cue in effect queue");
    }
   }
   tint+=(targetTint-tint)*.1;haze+=(targetHaze-haze)*.08;silence+=(targetSilence-silence)*.1;
-  duck(silence);
- }
- private void duck(double amount){
-  if(Math.abs(lastDuck-amount)<.002)return;
-  var mc=Minecraft.getInstance();
-  // Alters active audio channels only; never writes Minecraft's options or changes MASTER/VOICE.
-  for(SoundSource source:List.of(SoundSource.AMBIENT,SoundSource.MUSIC,SoundSource.WEATHER)){
-   float base=mc.options.getSoundSourceOptionInstance(source).get().floatValue();
-   // 26.3 no longer exposes the previous per-channel setter. Keep user volume unchanged.
-  }
-  lastDuck=amount;
+  distortion+=(targetDistortion-distortion)*.08;
+  mixer.tick(silence);
  }
  public void clear(){
-  effects.clear();sounds.forEach(HorrorSound::stop);sounds.clear();tint=0;haze=0;silence=0;duck(0);
+  effects.clear();sounds.forEach(HorrorSound::stop);sounds.clear();tint=0;haze=0;silence=0;distortion=0;mixer.tick(0);
  }
  public void draw(GuiGraphicsExtractor g){
   int w=g.guiWidth(),h=g.guiHeight();
   // A low-contrast camera veil. This is not a replacement for depth-dependent terrain fog.
   int alpha=(int)Math.clamp(haze*55+tint*42,0,80);
   if(alpha>0)g.fill(0,0,w,h,(alpha<<24)|0x15151b);
+  if(distortion>.005){
+   for(int row=0;row<8;row++){
+    int offset=(int)(Math.sin(tick*.025+row*.7)*distortion*9);
+    int alphaBand=(int)(distortion*22);
+    g.fill(Math.max(0,offset),row*h/8,w-Math.max(0,-offset),row*h/8+Math.max(1,h/100),(alphaBand<<24)|0x16141a);
+   }
+  }
   int edge=(int)Math.clamp(tint*60,0,65);
   for(int i=0;i<12&&edge>0;i++){
    int a=(int)(edge*(1-i/12.0));int x=i*w/100,y=i*h/80;

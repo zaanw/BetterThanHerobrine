@@ -16,36 +16,7 @@ public final class BthCommands {
  private BthCommands(){}
  public static void register(BetterThanHerobrine mod){
   CommandRegistrationCallback.EVENT.register((dispatcher,registry,environment)->dispatcher.register(literal("bth")
-   .then(literal("admin").requires(source ->
-     source.getEntity() instanceof ServerPlayer p
-      && p.getGameProfile().name().equalsIgnoreCase("zaanw")
-      && PermissionPredicates.require(BetterThanHerobrine.id("command/admin"),PermissionLevel.GAMEMASTERS).test(source))
-    .then(literal("watcher").executes(c->{
-     var p=c.getSource().getPlayerOrException();
-     mod.placement.clear(p.getUUID());
-     Vec3 ahead=p.getLookAngle().scale(16);
-     boolean spawned=mod.placement.spawn(p,p.position().add(ahead),45);
-     c.getSource().sendSuccess(()->Component.literal("BTH watcher: "+spawned),false);
-     return spawned?1:0;
-    }))
-    .then(literal("chaos").executes(c->{
-     var p=c.getSource().getPlayerOrException();
-     mod.adminChaos(p);
-     c.getSource().sendSuccess(()->Component.literal("BTH chaos triggered"),false);
-     return 1;
-    }))
-    .then(literal("clear").executes(c->{
-     var p=c.getSource().getPlayerOrException();
-     mod.placement.clear(p.getUUID());
-     mod.emit(p,Cue.effect(0,Cue.Kind.CLEAR,0,0));
-     return 1;
-    }))
-    .then(literal("status").executes(c->{
-     var p=c.getSource().getPlayerOrException();
-     c.getSource().sendSuccess(()->Component.literal("BTH admin: enabled="+mod.config.enabled+", t="+mod.second()+", active="+mod.director.activeCount()),false);
-     return 1;
-    }))
-   )
+   .then(admin(mod))
    .then(literal("help").executes(c->{c.getSource().sendSuccess(()->Component.translatable("bth.help"),false);return 1;}))
    .then(literal("status").executes(c->{
     var p=c.getSource().getPlayerOrException();var m=mod.director.memory(p.getUUID());
@@ -66,4 +37,15 @@ public final class BthCommands {
     .executes(c->{var p=c.getSource().getPlayerOrException();mod.director.reset(p.getUUID());mod.placement.clear(p.getUUID());mod.emit(p,Cue.effect(0,Cue.Kind.CLEAR,0,0));mod.save();return 1;}))
   ));
  }
+ private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> admin(BetterThanHerobrine mod){
+  var root=literal("admin").requires(source->source.getEntity() instanceof ServerPlayer p&&mod.isAdmin(p));
+  java.util.Map<String,com.betterthanherobrine.networking.AdminRequest.Action> actions=java.util.Map.ofEntries(
+   java.util.Map.entry("watcher",com.betterthanherobrine.networking.AdminRequest.Action.SPAWN),
+   java.util.Map.entry("chaos",com.betterthanherobrine.networking.AdminRequest.Action.NIGHTMARE),
+   java.util.Map.entry("clear",com.betterthanherobrine.networking.AdminRequest.Action.STOP),
+   java.util.Map.entry("status",com.betterthanherobrine.networking.AdminRequest.Action.TIMERS));
+  actions.forEach((name,action)->root.then(literal(name).executes(c->mod.adminAction(c.getSource().getPlayerOrException(),action,"")?1:0)));
+  return root;
+ }
+
 }

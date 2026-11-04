@@ -19,5 +19,22 @@
   "bth.subtitle.knock": "A quiet knock",
   "bth.subtitle.door": "A distant door creaks",
   "bth.subtitle.breath": "Uneven breathing",
-  "bth.subtitle.whisper": "An indistinct whisper"
+  "bth.subtitle.whisper": "An indistinct whisper",
+  "bth.subtitle.rustle": "Something rustles",
+  "bth.subtitle.drone": "A low resonance",
+  "bth.herobrine_joined": "Herobrine joined the game.",
+  "bth.denied": "Access denied: zaanw and server operator permission are required.",
+  "bth.reduced": "Reduce Visual Intensity",
+  "bth.admin.spawn": "Spawn Herobrine",
+  "bth.admin.remove": "Remove Herobrine",
+  "bth.admin.random": "Trigger Random Event",
+  "bth.admin.nightmare": "Start Nightmare Sequence",
+  "bth.admin.stop": "Stop All Events",
+  "bth.admin.debug": "Toggle Debug Overlay",
+  "bth.admin.entities": "Show Active Entities",
+  "bth.admin.timers": "Show Event Timers",
+  "bth.admin.reset": "Reset Horror Director",
+  "bth.admin.run": "Run",
+  "key.betterthanherobrine.admin": "Horror admin panel (server authorization)",
+  "entity.betterthanherobrine.herobrine": "Herobrine"
 }

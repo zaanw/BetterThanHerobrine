@@ -19,5 +19,22 @@
   "bth.subtitle.knock": "Тихий стук",
   "bth.subtitle.door": "Вдалеке скрипит дверь",
   "bth.subtitle.breath": "Неровное дыхание",
-  "bth.subtitle.whisper": "Неразборчивый шёпот"
+  "bth.subtitle.whisper": "Неразборчивый шёпот",
+  "bth.subtitle.rustle": "Что-то шуршит",
+  "bth.subtitle.drone": "Низкий гул",
+  "bth.herobrine_joined": "Херобрин присоединился к игре.",
+  "bth.denied": "Нет доступа: требуются ник zaanw и права оператора сервера.",
+  "bth.reduced": "Уменьшить визуальные эффекты",
+  "bth.admin.spawn": "Вызвать Херобрина",
+  "bth.admin.remove": "Убрать Херобрина",
+  "bth.admin.random": "Случайное событие",
+  "bth.admin.nightmare": "Начать кошмар",
+  "bth.admin.stop": "Остановить все события",
+  "bth.admin.debug": "Переключить отладочный оверлей",
+  "bth.admin.entities": "Показать активные сущности",
+  "bth.admin.timers": "Показать таймеры событий",
+  "bth.admin.reset": "Сбросить Horror Director",
+  "bth.admin.run": "Запуск",
+  "key.betterthanherobrine.admin": "Панель администратора (доступ сервера)",
+  "entity.betterthanherobrine.herobrine": "Херобрин"
 }

@@ -9,6 +9,8 @@ public final class MemoryStore {
   Properties p=new Properties();p.setProperty("format","1");
   for(var e:director.memories().entrySet()){
    String k=e.getKey()+".";PlayerMemory m=e.getValue();
+   p.setProperty(k+"introduced",""+m.introduced);
+   p.setProperty(k+"recent",String.join(",",m.recentEvents));
    p.setProperty(k+"age",""+m.age);p.setProperty(k+"tension",""+m.tension);
    p.setProperty(k+"encounters",""+m.encounters);p.setProperty(k+"last",m.lastEvent);
    p.setProperty(k+"quiet",""+Math.max(0,m.quietUntil-now));
@@ -28,6 +30,8 @@ public final class MemoryStore {
   Map<UUID,PlayerMemory> loaded=new HashMap<>();
   try{for(String key:p.stringPropertyNames())if(key.endsWith(".age")){
    UUID id=UUID.fromString(key.substring(0,key.length()-4));String k=id+".";var m=new PlayerMemory();
+   m.introduced=Boolean.parseBoolean(p.getProperty(k+"introduced","false"));
+   for(String event:p.getProperty(k+"recent","").split(","))if(!event.isBlank()&&m.recentEvents.size()<4)m.recentEvents.addLast(event);
    m.age=Math.max(0,Long.parseLong(p.getProperty(k+"age")));
    m.tension=Math.clamp(Double.parseDouble(p.getProperty(k+"tension","0")),0,99);
    if(!Double.isFinite(m.tension))throw new NumberFormatException("non-finite tension");

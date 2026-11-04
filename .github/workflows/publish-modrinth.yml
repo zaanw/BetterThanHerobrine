@@ -2,6 +2,16 @@ name: Publish BetterThanHerobrine to Modrinth
 
 on:
   workflow_dispatch:
+    inputs:
+      reviewed_version:
+        description: 'Type the exact tested version to authorize publication'
+        required: true
+        type: string
+      game_smoke_test_passed:
+        description: 'Client rendering, F8, commands and dedicated server smoke tests have passed'
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -9,6 +19,8 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: modrinth-release
+    timeout-minutes: 30
     steps:
       - name: Check publication configuration
         env:
@@ -25,14 +37,26 @@ jobs:
           fi
       - name: Checkout sources
         uses: actions/checkout@v4
+      - name: Require an explicitly reviewed, tested version
+        env:
+          REVIEWED_VERSION: ${{ inputs.reviewed_version }}
+          GAME_VERIFIED: ${{ inputs.game_smoke_test_passed }}
+        run: |
+          version=$(sed -n 's/^version=//p' gradle.properties | tr -d '\r')
+          test "$REVIEWED_VERSION" = "$version"
+          test "$GAME_VERIFIED" = "true"
       - name: Install Java 25
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '25'
+      - name: Install audio validation tools
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: Build and run checks
         run: |
           chmod +x gradlew
+          ./tools/test-core.sh
+          python3 tools/check-assets.py
           ./gradlew clean build
       - name: Prepare release JAR
         run: |
@@ -63,9 +87,7 @@ jobs:
           name: BetterThanHerobrine ${{ steps.mod_version.outputs.version }} (Minecraft 26.3)
           version: ${{ steps.mod_version.outputs.version }}
           version-type: beta
-          changelog: |
-            Automatic Minecraft 26.3 Fabric build from commit ${{ github.sha }}.
-            Requires Fabric API and Fabric Loader 0.20.1+.
+          changelog-file: docs/MODRINTH.md
           loaders: fabric
           game-versions: 26.3
           game-version-filter: none

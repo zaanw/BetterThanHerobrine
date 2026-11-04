@@ -1,5 +1,26 @@
 # BetterThanHerobrine
 
+## 0.4.0-beta.1 — THE HAUNTING, рабочая ветка
+
+Это расширение существующего проекта, **не проверенный релиз**. Цель: Minecraft Java 26.3, Java 25, Fabric Loader 0.20.1+, Fabric API 0.165.0+26.3. `./gradlew clean build` в текущей машине блокируется HTTP 403 от Fabric Maven. JAR этой версии пока нет.
+
+В исходниках: 30 исполняемых сцен; отдельный Herobrine EntityType и humanoid model; режимы observer/approach/doppelganger/window; однократное вступление вместо бесконечного цикла молний; оригинальные звуки; локализация и сохраняемые настройки. Права F8 и каждого действия проверяются сервером: требуются одновременно ник `zaanw` и gamemaster/operator permission. Все 10 действий панели реализованы через типизированные запросы. Существующие `/bth` команды сохранены; `admin watcher` и `admin chaos` используют тот же авторизованный обработчик. Статус игровых кнопок и рендерера: **не проверено в Minecraft**.
+
+- [Подробные изменения и результаты проверок](docs/HAUNTING-VALIDATION.md)
+- [Черновик Modrinth и условия ручной публикации](docs/MODRINTH.md)
+- [Сценарии](docs/MECHANICS.md)
+
+Проверки: `JAVA_HOME=/path/to/jdk-25 ./tools/test-core.sh`, `python3 tools/check-assets.py`, затем `./gradlew clean build`. Для ресурсов требуются ffmpeg/ffprobe. В облаке `tools/cloud-install.sh` активирует установленную Java и настройки прокси/TLS. Запуск после успешной сборки: `./gradlew runClient` и `./gradlew runServer --args nogui`. Minecraft EULA пользователь принимает самостоятельно.
+
+GitHub Actions собирает JAR на push в main/haunting-ветку, PR и manual dispatch. Modrinth workflow запускается только вручную с точной проверенной версией и подтверждением игровых smoke-тестов; автоматической публикации при push нет. Рекомендуется защита environment `modrinth-release` required reviewers.
+
+Ограничения: дымка пока экранная, shader/depth fog не реализован; геометрия окон и базы ограничена эвристиками; отображение Herobrine, audio mixins, F8 и dedicated-server startup требуют реального запуска. Исходники 0.4 ещё не прошли разрешение Minecraft/Fabric типов.
+
+---
+
+Ниже — историческая документация первой итерации 0.1.0. Текущее состояние описано выше и в отчёте 0.4.
+
+
 Автор: **zaan** · ID: `betterthanherobrine` · пакет: `com.betterthanherobrine`
 
 Психологический survival horror для Fabric. Это **первая итерация исходников**, а не проверенный релиз. Независимое ядро протестировано; Minecraft-интеграция ещё не скомпилирована и не запущена из-за сетевой блокировки Fabric Maven. Готового игрового JAR нет. Полные требования, включая 40+ различных событий, пока не выполнены.

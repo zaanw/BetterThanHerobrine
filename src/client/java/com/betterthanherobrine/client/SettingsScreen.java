@@ -44,23 +44,25 @@ public final class SettingsScreen extends Screen {
    value(2,"bth.volume",()->c.volume,v->c.volume=v);
    toggle(3,"bth.visuals",()->c.visualEffects,v->c.visualEffects=v);
    value(4,"bth.fog",()->c.fogIntensity,v->c.fogIntensity=v);
-  }else{
+  }else if(page==1){
    toggle(0,"bth.screen",()->c.screenEffects,v->c.screenEffects=v);
    toggle(1,"bth.performance",()->c.performanceMode,v->c.performanceMode=v);
    toggle(2,"bth.anomalies",()->c.worldAnomalies,v->c.worldAnomalies=v);
+   toggle(3,"bth.reduced",()->c.reducedVisuals,v->c.reducedVisuals=v);
    if(minecraft.hasSingleplayerServer()){
-    value(3,"bth.intensity",()->c.intensity/2,v->c.intensity=v*2);
-    value(4,"bth.frequency",()->c.entityFrequency/2,v->c.entityFrequency=v*2);
+    value(4,"bth.intensity",()->c.intensity/2,v->c.intensity=v*2);
+
    }
   }
-  button(width/2-148,height-73,296,(page+1)+" / 2",()->{page=1-page;clearWidgets();init();});
+  if(page==2&&minecraft.hasSingleplayerServer())value(0,"bth.frequency",()->c.entityFrequency/2,v->c.entityFrequency=v*2);
+  button(width/2-148,height-73,296,(page+1)+" / 3",()->{page=(page+1)%3;clearWidgets();init();});
   int y=height-49;int x=width/2-148;
   String[] presets={"Low","Normal","High","Nightmare"};
   for(int i=0;i<presets.length;i++){
    String name=presets[i];
    DarkButton option=new DarkButton(x+i*75,y,71,20,Component.literal(name),
-    b->{if("Nightmare".equals(name)){c.preset("Nightmare");saveAndRefresh();}});
-   option.active="Nightmare".equals(name);
+    b->{c.preset(name);saveAndRefresh();});
+   option.active=true;
    addRenderableWidget(option);
   }
   button(x,height-25,296,"OK",this::onClose);

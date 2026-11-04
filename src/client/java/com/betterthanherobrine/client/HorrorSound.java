@@ -12,7 +12,7 @@ public final class HorrorSound extends AbstractSoundInstance implements Tickable
  public HorrorSound(CuePayload packet,float volume){
   super(BetterThanHerobrine.id(packet.resource()),SoundSource.AMBIENT,SoundInstance.createUnseededRandom());
   x=packet.x();y=packet.y();z=packet.z();pitch=.9f+random.nextFloat()*.2f;
-  gain=packet.strength()*volume;lifetime=Math.max(12,packet.duration()*20);this.volume=0;
+  gain=packet.strength()*volume;lifetime=Math.max(12,packet.duration()*20);this.volume=gain*.08f;
   attenuation=SoundInstance.Attenuation.LINEAR;relative=false;looping=false;
  }
  @Override public void tick(){

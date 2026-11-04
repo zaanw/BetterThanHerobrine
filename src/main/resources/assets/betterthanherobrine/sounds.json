@@ -88,5 +88,35 @@
         "attenuation_distance": 48
       }
     ]
+  },
+  "rustle": {
+    "subtitle": "bth.subtitle.rustle",
+    "sounds": [
+      {
+        "name": "betterthanherobrine:rustle_0",
+        "weight": 1,
+        "attenuation_distance": 48
+      },
+      {
+        "name": "betterthanherobrine:rustle_1",
+        "weight": 1,
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "drone": {
+    "subtitle": "bth.subtitle.drone",
+    "sounds": [
+      {
+        "name": "betterthanherobrine:drone_0",
+        "weight": 1,
+        "attenuation_distance": 48
+      },
+      {
+        "name": "betterthanherobrine:drone_1",
+        "weight": 1,
+        "attenuation_distance": 48
+      }
+    ]
   }
 }

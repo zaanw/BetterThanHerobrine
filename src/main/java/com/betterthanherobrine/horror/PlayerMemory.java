@@ -2,6 +2,8 @@ package com.betterthanherobrine.horror;
 import java.util.*;
 /** Bounded per-player memory. UUIDs stay on the local server. */
 public final class PlayerMemory {
+ public boolean introduced;
+ public final ArrayDeque<String> recentEvents=new ArrayDeque<>();
  public long age, nextEvent=0, quietUntil=0;
  public double tension=0, vigilance=0;
  public int encounters=0;

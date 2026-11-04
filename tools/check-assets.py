@@ -21,9 +21,10 @@ for lang in langs:
  for entry in sounds.values():assert entry['subtitle'] in lang
  for java in (root/'src').rglob('*.java'):
   for key in re.findall(r'"(bth\.[a-z.]+|key\.betterthanherobrine\.[a-z]+)"',java.read_text()):assert key in lang,(java,key)
-png=(a/'textures/entity/watcher.png').read_bytes();assert png[:8]==b'\x89PNG\r\n\x1a\n';assert struct.unpack('>II',png[16:24])==(64,64)
+for name in ['watcher','herobrine','doppelganger']:
+ png=(a/f'textures/entity/{name}.png').read_bytes();assert png[:8]==b'\x89PNG\r\n\x1a\n';assert struct.unpack('>II',png[16:24])==(64,64)
 mod=json.loads((root/'src/main/resources/fabric.mod.json').read_text());assert mod['id']=='betterthanherobrine' and mod['authors']==['zaan']
 for kind,entries in mod['entrypoints'].items():
  for entry in entries:
   folder='client' if kind=='client' else 'main';assert (root/'src'/folder/'java'/Path(entry.replace('.','/')).with_suffix('.java')).is_file()
-print(f'PASS: {len(sounds)} sound events, 12 decoded mono Vorbis resources, 64x64 texture, matching EN/RU keys, Fabric entrypoint files.')
+print(f'PASS: {len(sounds)} sound events, {sum(len(s["sounds"]) for s in sounds.values())} decoded mono Vorbis resources, 3 textures, matching EN/RU keys, Fabric entrypoint files.')

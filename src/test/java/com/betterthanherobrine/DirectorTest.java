@@ -11,6 +11,21 @@ public final class DirectorTest {
  public static void main(String[] args)throws Exception{
   var cfg=new HorrorConfig();cfg.graceSeconds=0;cfg.intensity=2;
   var d=new HorrorDirector(cfg,new Random(42));UUID id=new UUID(0,1);
+  check(Events.ALL.size()>=25,"At least 25 complete scenes");
+  for(String name:List.of("zaanw","ZAANW","za anw","another",""))for(boolean permission:List.of(true,false))
+   check(AdminPolicy.allowed(name,permission)==(permission&&name.equalsIgnoreCase("zaanw")),"Server permission + exact name");
+  for(int seed=0;seed<64;seed++){
+   var opening=new HorrorDirector(new HorrorConfig(),new Random(seed));UUID newcomer=new UUID(4,seed);
+   int join=0,sound=0;
+   for(int sec=0;sec<60;sec++){
+    var flat=new Context(sec,6000,false,false,false,false,false,false,15,0,0,0,false,false,false,false,-60);
+    for(var emission:opening.tick(Map.of(newcomer,flat))){
+     if(emission.cue().kind()==Cue.Kind.SOUND)sound++;
+     if(emission.cue().kind()==Cue.Kind.JOIN)join++;
+    }
+   }
+   check(join==1&&sound>0,"One localized join stage and audible opening within a minute, including superflat");
+  }
   Set<String> ids=new HashSet<>();for(var e:Events.ALL){check(ids.add(e.id()),"Unique ID "+e.id());check(e.duration()<=600,"Bounded scene");}
   // Test every stage, not just every event name. Force scenes and check exact cue delivery once.
   for(var e:Events.ALL){
@@ -56,19 +71,25 @@ public final class DirectorTest {
   try{
    Path file=dir.resolve("memory.properties");MemoryStore.save(file,d,30001);
    var restored=new HorrorDirector(cfg,new Random(42));MemoryStore.load(file,restored,0);
+   check(restored.memory(id).introduced==d.memory(id).introduced,"Persist introduction phase");
    check(restored.memory(id).age==d.memory(id).age,"Persist age");
    check(restored.memory(id).encounters==d.memory(id).encounters,"Persist encounters");
    check(restored.memory(id).lastEvent.equals(d.memory(id).lastEvent),"Persist repeat prevention");
    check(restored.memory(id).chunks.equals(d.memory(id).chunks),"Persist exploration");
    check(restored.memory(id).nextEvent>=0&&restored.memory(id).nextEvent<=3600,"Rebase cooldown across restart");
    Path settings=dir.resolve("config.properties");cfg.preset("Nightmare");cfg.save(settings);
-   var loaded=HorrorConfig.load(settings);check(loaded.intensity==1.85&&loaded.graceSeconds==0,"Nightmare preset persistence");
+   var loaded=HorrorConfig.load(settings);check(loaded.intensity==1.85&&loaded.graceSeconds==cfg.graceSeconds,"Nightmare preset persistence");
+   loaded.enabled=false;loaded.volume=.23;loaded.reducedVisuals=true;loaded.save(settings);
+   var preferences=HorrorConfig.load(settings);
+   check(!preferences.enabled&&preferences.volume==.23&&preferences.reducedVisuals,"Loading never overwrites user preferences");
+   double[] intensities={.55,1,1.35,1.85};int preset=0;
+   for(String name:List.of("Low","Normal","High","Nightmare")){preferences.preset(name);check(preferences.intensity==intensities[preset++],"Distinct functional presets");}
    loaded.intensity=Double.NaN;loaded.volume=2;loaded.validate();check(loaded.intensity==0&&loaded.volume==1,"Config clamps");
    Files.writeString(file,"format=1\n"+id+".age=oops\n");
    try{MemoryStore.load(file,restored,0);throw new AssertionError("Corrupt state accepted");}catch(java.io.IOException expected){checks++;}
   }finally{try(var walk=Files.walk(dir)){for(Path p:walk.sorted(Comparator.reverseOrder()).toList())Files.delete(p);}}
   var grace=new HorrorConfig();var quiet=new HorrorDirector(grace,new Random(42));
-  for(long s=0;s<grace.graceSeconds;s++)check(quiet.tick(Map.of(id,context(s))).isEmpty(),"Grace period");
+  for(long s=0;s<20;s++)check(quiet.tick(Map.of(id,context(s))).isEmpty(),"Grace period");
   System.out.println("PASS: "+checks+" checks; "+Events.ALL.size()+" scenes; 30,000-second simulation; persistence/config round trips.");
  }
 }

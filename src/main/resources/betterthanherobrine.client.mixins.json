@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.betterthanherobrine.client.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "AtmosphericVolumeMixin",
+    "SoundManagerAccess",
+    "SoundEngineAccess"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
