@@ -56,7 +56,13 @@ public final class SettingsScreen extends Screen {
   button(width/2-148,height-73,296,(page+1)+" / 2",()->{page=1-page;clearWidgets();init();});
   int y=height-49;int x=width/2-148;
   String[] presets={"Low","Normal","High","Nightmare"};
-  for(int i=0;i<presets.length;i++){String name=presets[i];button(x+i*75,y,71,name,()->{c.preset(name);saveAndRefresh();});}
+  for(int i=0;i<presets.length;i++){
+   String name=presets[i];
+   DarkButton option=new DarkButton(x+i*75,y,71,20,Component.literal(name),
+    b->{if("Nightmare".equals(name)){c.preset("Nightmare");saveAndRefresh();}});
+   option.active="Nightmare".equals(name);
+   addRenderableWidget(option);
+  }
   button(x,height-25,296,"OK",this::onClose);
  }
  @Override public void extractRenderState(GuiGraphicsExtractor g,int mx,int my,float delta){
