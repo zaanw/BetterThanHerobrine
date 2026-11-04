@@ -1,0 +1,62 @@
+name: Publish BetterThanHerobrine to Modrinth
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check publication configuration
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          MODRINTH_PROJECT_ID: ${{ vars.MODRINTH_PROJECT_ID }}
+        run: |
+          if [ -z "$MODRINTH_TOKEN" ]; then
+            echo "::error::Set the repository Actions secret MODRINTH_TOKEN (with CREATE_VERSION scope) before publishing."
+            exit 1
+          fi
+          if [ -z "$MODRINTH_PROJECT_ID" ]; then
+            echo "::error::Set the repository Actions variable MODRINTH_PROJECT_ID to your existing Modrinth project ID."
+            exit 1
+          fi
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Install Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Build and run checks
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build
+      - name: Prepare release JAR
+        run: |
+          mkdir -p dist
+          find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' -type f -print
+          count=$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' -type f | wc -l)
+          if [ "$count" -ne 1 ]; then
+            echo "::error::Expected exactly one release JAR, got $count."
+            exit 1
+          fi
+          find build/libs -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' -type f -exec cp '{}' dist/BetterThanHerobrine.jar \;
+      - name: Publish on Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: ${{ vars.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: dist/BetterThanHerobrine.jar
+          name: BetterThanHerobrine 0.1.${{ github.run_number }} (Minecraft 26.3)
+          version: 0.1.${{ github.run_number }}+26.3
+          version-type: beta
+          changelog: |
+            Automatic Minecraft 26.3 Fabric build from commit ${{ github.sha }}.
+            Requires Fabric API and Fabric Loader 0.20.1+.
+          loaders: fabric
+          game-versions: 26.3
+          dependencies: |
+            required-dependency fabric-api
