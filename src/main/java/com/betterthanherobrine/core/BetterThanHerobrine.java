@@ -21,6 +21,7 @@ import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.Component;
 import org.slf4j.*;
 import java.nio.file.Path;
 import java.io.IOException;
@@ -39,6 +40,7 @@ public final class BetterThanHerobrine implements ModInitializer {
  public HorrorConfig config;
  public final WatcherPlacement placement=new WatcherPlacement();
  private long second;
+ private final Map<UUID,Long> enteredAt=new HashMap<>();
  private int ticks;
  private Path state;
  private final Map<UUID,Vec3> lastPosition=new HashMap<>();
@@ -52,13 +54,13 @@ public final class BetterThanHerobrine implements ModInitializer {
   PayloadTypeRegistry.clientboundPlay().register(CuePayload.TYPE,CuePayload.CODEC);
   BthCommands.register(this);
   ServerLifecycleEvents.SERVER_STARTED.register(server->{
-   second=0;ticks=0;director.clear();lastPosition.clear();residence.clear();dimensions.clear();
+   second=0;ticks=0;director.clear();lastPosition.clear();residence.clear();dimensions.clear();enteredAt.clear();
    state=server.getWorldPath(LevelResource.ROOT).resolve("betterthanherobrine/memory.properties");
    try{MemoryStore.load(state,director,second);}catch(IOException e){LOG.error("BTH history unreadable; original retained",e);state=null;}
   });
   ServerTickEvents.END_SERVER_TICK.register(this::tick);
   ServerPlayConnectionEvents.DISCONNECT.register((handler,server)->{
-   UUID id=handler.player.getUUID();director.disconnect(id);placement.clear(id);lastPosition.remove(id);residence.remove(id);dimensions.remove(id);save();
+   UUID id=handler.player.getUUID();director.disconnect(id);placement.clear(id);lastPosition.remove(id);residence.remove(id);dimensions.remove(id);enteredAt.remove(id);save();
   });
   ServerLifecycleEvents.SERVER_STOPPING.register(server->{save();placement.clearAll();director.clear();});
  }
@@ -76,7 +78,10 @@ public final class BetterThanHerobrine implements ModInitializer {
  private void tick(MinecraftServer server){
   if(++ticks%20!=0)return;second++;Map<UUID,Context> contexts=new LinkedHashMap<>();
   for(ServerPlayer p:server.getPlayerList().getPlayers()){
-   UUID id=p.getUUID();String dim=p.level().dimension().identifier().toString();
+   UUID id=p.getUUID();
+   long age=second-enteredAt.computeIfAbsent(id,key->second);
+   if(config.enabled&&!p.isSpectator())nightmareSequence(p,age);
+   String dim=p.level().dimension().identifier().toString();
    String previous=dimensions.put(id,dim);
    if(previous!=null&&!previous.equals(dim)){placement.clear(id);director.disconnect(id);lastPosition.remove(id);residence.remove(id);}
    if(!p.isAlive()||p.isSpectator()||p.isCreative()){director.disconnect(id);placement.clear(id);continue;}
@@ -87,6 +92,41 @@ public final class BetterThanHerobrine implements ModInitializer {
    ServerPlayer player=server.getPlayerList().getPlayer(emitted.player());if(player!=null)emit(player,emitted.cue());
   }
   if(!config.enabled)placement.clearAll();placement.tick();if(second%60==0)save();
+ }
+ /** Deterministic server-side opening scene, counted in seconds spent inside a world. */
+ private void nightmareSequence(ServerPlayer player,long age){
+  if(age==60){
+   player.sendSystemMessage(Component.translatable("multiplayer.player.joined",Component.literal("Herobrine")));
+   lightning(player,0,0);
+   emit(player,Cue.effect(0,Cue.Kind.FOG,.95f,110));
+   emit(player,Cue.effect(0,Cue.Kind.TINT,.85f,25));
+   emit(player,Cue.sound(0,"whisper",-2,0,1,.9f));
+  }
+  // One storm chapter only. Lightning is visual-only: no fire, terrain loss or PvP damage.
+  if(age==62||age==65||age==69||age==75||age==83){
+   lightning(player,age%2==0?2:-3,age%3==0?3:-2);
+   emit(player,Cue.effect(0,Cue.Kind.TINT,.75f,7));
+   emit(player,Cue.sound(0,"stone",4,1,0,.8f));
+  }
+  if(age==64||age==78||age==91){
+   Vec3 behind=player.getLookAngle().scale(-12);
+   Vec3 pos=player.position().add(behind);
+   placement.spawn(player,pos,35);
+   emit(player,new Cue(0,Cue.Kind.PARTICLES,"shadow",-4,0,1,.9f,15));
+   emit(player,Cue.sound(0,"breath",-2,0,1,.75f));
+  }
+  if(age==72||age==88){
+   emit(player,Cue.effect(0,Cue.Kind.SYMBOL,.85f,20));
+   emit(player,Cue.effect(0,Cue.Kind.SILENCE,.8f,16));
+  }
+ }
+ private void lightning(ServerPlayer player,double offsetX,double offsetZ){
+  ServerLevel level=(ServerLevel)player.level();
+  var bolt=EntityType.LIGHTNING_BOLT.create(level,EntitySpawnReason.TRIGGERED);
+  if(bolt==null)return;
+  bolt.setVisualOnly(true);
+  bolt.snapTo(player.getX()+offsetX,player.getY(),player.getZ()+offsetZ);
+  level.addFreshEntity(bolt);
  }
  public void emit(ServerPlayer player,Cue cue){
   if(cue.kind()!=Cue.Kind.CLEAR&&!config.enabled)return;
