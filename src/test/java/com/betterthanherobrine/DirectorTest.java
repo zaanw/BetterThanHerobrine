@@ -67,6 +67,16 @@ public final class DirectorTest {
   var protectedWorld=new HorrorDirector(cfg,new Random(1));
   check(!protectedWorld.force(id,"unknown_symbol",context(0)),"World anomaly setting enforced");
   cfg.worldAnomalies=true;
+  var stopped=new HorrorDirector(cfg,new Random(3));
+  check(stopped.force(id,"the_approach",context(0)),"Admin-owned finite sequence starts");
+  check(stopped.timers(5).size()==1,"Live timer reports active sequence");
+  stopped.stopAll();check(stopped.activeCount()==0&&stopped.timers(5).isEmpty(),"Stop removes every scheduled stage");
+  check(stopped.tick(Map.of(id,context(6))).isEmpty(),"Stopped sequence cannot emit delayed cues");
+  stopped.reset(id);check(stopped.memory(id).age==0,"Reset clears player memory");
+  var off=new HorrorConfig();off.intensity=0;
+  var disabled=new HorrorDirector(off,new Random(4));
+  for(int sec=0;sec<70;sec++)check(disabled.tick(Map.of(id,context(sec))).isEmpty(),"Zero intensity suppresses opening and random scenes");
+  check(!disabled.force(id,"the_observer",context(0)),"Zero intensity suppresses forced scenes");
   var dir=Files.createTempDirectory("bth-tests-");
   try{
    Path file=dir.resolve("memory.properties");MemoryStore.save(file,d,30001);

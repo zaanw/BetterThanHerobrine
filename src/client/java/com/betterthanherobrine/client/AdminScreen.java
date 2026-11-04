@@ -7,13 +7,14 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 /** Opens only after an affirmative server response; all buttons are re-authorized server-side. */
 public final class AdminScreen extends Screen {
+ public static AdminRequest.Action requestedInfo;
  private final Screen parent;private int page,selected;
  public AdminScreen(Screen parent){super(Component.literal("BetterThanHerobrine"));this.parent=parent;}
  private void action(int row,String key,AdminRequest.Action action){
   addRenderableWidget(new DarkButton(width/2-145,43+row*23,290,20,Component.translatable(key),button->send(action,"")));
  }
  private void send(AdminRequest.Action action,String event){
-  if(BetterThanHerobrineClient.adminCooldown==0&&ClientPlayNetworking.canSend(AdminRequest.TYPE)){BetterThanHerobrineClient.adminCooldown=20;ClientPlayNetworking.send(new AdminRequest(action,event));}
+  if(BetterThanHerobrineClient.adminCooldown==0&&ClientPlayNetworking.canSend(AdminRequest.TYPE)){BetterThanHerobrineClient.adminCooldown=20;if(action==AdminRequest.Action.ENTITIES||action==AdminRequest.Action.TIMERS)requestedInfo=action;ClientPlayNetworking.send(new AdminRequest(action,event));}
  }
  @Override protected void init(){
   if(page==0){

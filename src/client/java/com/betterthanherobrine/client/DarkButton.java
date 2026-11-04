@@ -5,10 +5,10 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import java.util.function.Supplier;
 /** Custom dark controls retain vanilla focus, keyboard activation and narration. */
-public final class DarkButton extends Button.Plain {
+public final class DarkButton extends Button {
  private float hover;
  public DarkButton(int x,int y,int width,int height,Component label,OnPress press){super(x,y,width,height,label,press,Supplier::get);}
- @Override protected void extractWidgetRenderState(GuiGraphicsExtractor g,int mx,int my,float delta){
+ @Override protected void extractContents(GuiGraphicsExtractor g,int mx,int my,float delta){
   boolean over=mx>=getX()&&mx<getX()+getWidth()&&my>=getY()&&my<getY()+getHeight();
   hover+=((over||isFocused()?1:0)-hover)*.15f;
   int shade=22+(int)(hover*10),red=65+(int)(hover*35);

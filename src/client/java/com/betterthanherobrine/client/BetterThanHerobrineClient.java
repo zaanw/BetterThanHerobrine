@@ -32,14 +32,18 @@ public final class BetterThanHerobrineClient implements ClientModInitializer {
   EntityRendererRegistry.register(BetterThanHerobrine.HEROBRINE,HerobrineRenderer::new);
   ClientPlayNetworking.registerGlobalReceiver(AdminState.TYPE,(packet,context)->context.client().execute(()->{
    adminState=packet;var client=context.client();
+   if(packet.allowed()&&AdminScreen.requestedInfo!=null){
+    var action=AdminScreen.requestedInfo;AdminScreen.requestedInfo=null;
+    client.gui.setScreen(new AdminInfoScreen(client.gui.screen(),action));
+   }
    if(packet.allowed()&&packet.open())client.gui.setScreen(new AdminScreen(client.gui.screen()));
    if(!packet.allowed()){
-    if(client.gui.screen() instanceof AdminScreen)client.gui.setScreen(null);
-    if(client.player!=null)client.player.displayClientMessage(net.minecraft.network.chat.Component.translatable("bth.denied"),true);
+    if(client.gui.screen() instanceof AdminScreen||client.gui.screen() instanceof AdminInfoScreen)client.gui.setScreen(null);
+    if(client.player!=null)client.gui.hud.setOverlayMessage(net.minecraft.network.chat.Component.translatable("bth.denied"),false);
    }
   }));
   ClientPlayNetworking.registerGlobalReceiver(CuePayload.TYPE,(packet,context)->context.client().execute(()->ATMOSPHERE.accept(packet,config)));
-  ClientPlayConnectionEvents.DISCONNECT.register((handler,client)->{ATMOSPHERE.clear();adminState=null;});
+  ClientPlayConnectionEvents.DISCONNECT.register((handler,client)->{ATMOSPHERE.clear();adminState=null;AdminScreen.requestedInfo=null;adminCooldown=0;});
   var category=KeyMapping.Category.register(BetterThanHerobrine.id("settings"));
   var key=KeyMappingHelper.registerKeyMapping(new KeyMapping("key.betterthanherobrine.settings",InputConstants.Type.KEYBOARD,SDLScancode.SDL_SCANCODE_H,category));
   var adminKey=KeyMappingHelper.registerKeyMapping(new KeyMapping("key.betterthanherobrine.admin",InputConstants.Type.KEYBOARD,SDLScancode.SDL_SCANCODE_F8,category));

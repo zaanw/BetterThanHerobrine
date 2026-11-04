@@ -14,7 +14,7 @@ public abstract class AtmosphericVolumeMixin {
   SoundInstance sound=(SoundInstance)(Object)this;
   SoundSource category=sound.getSource();
   if(category==SoundSource.AMBIENT||category==SoundSource.WEATHER||category==SoundSource.MUSIC||category==SoundSource.NEUTRAL){
-   if(!sound.getLocation().getNamespace().equals("betterthanherobrine"))
+   if(!(sound instanceof com.betterthanherobrine.client.HorrorSound))
     callback.setReturnValue(callback.getReturnValue()*(float)(1-BetterThanHerobrineClient.ATMOSPHERE.silence));
   }
  }
