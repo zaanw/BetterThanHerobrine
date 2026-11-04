@@ -54,7 +54,7 @@ public final class ClientAtmosphere {
       if(!c.performanceMode)mc.level.addParticle(ParticleTypes.ASH,origin.x+t*.4,origin.y+.3,origin.z,0,0,0);
       particles+=2;
      }else{
-      var random=mc.level.random;var type=p.resource().equals("glimmer")?ParticleTypes.END_ROD:ParticleTypes.ASH;
+      var random=java.util.concurrent.ThreadLocalRandom.current();var type=p.resource().equals("glimmer")?ParticleTypes.END_ROD:ParticleTypes.ASH;
       mc.level.addParticle(type,origin.x+(random.nextDouble()-.5)*3,origin.y+random.nextDouble()*2,origin.z+(random.nextDouble()-.5)*3,0,.005,0);particles++;
      }
     }
@@ -70,7 +70,7 @@ public final class ClientAtmosphere {
   // Alters active audio channels only; never writes Minecraft's options or changes MASTER/VOICE.
   for(SoundSource source:List.of(SoundSource.AMBIENT,SoundSource.MUSIC,SoundSource.WEATHER)){
    float base=mc.options.getSoundSourceOptionInstance(source).get().floatValue();
-   mc.getSoundManager().updateSourceVolume(source,(float)(base*(1-amount)));
+   // 26.3 no longer exposes the previous per-channel setter. Keep user volume unchanged.
   }
   lastDuck=amount;
  }
