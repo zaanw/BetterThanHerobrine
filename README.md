@@ -2,7 +2,7 @@
 
 ## 0.4.0-beta.1 — THE HAUNTING, рабочая ветка
 
-Это расширение существующего проекта, **не проверенный релиз**. Цель: Minecraft Java 26.3, Java 25, Fabric Loader 0.20.1+, Fabric API 0.165.0+26.3. `./gradlew clean build` в текущей машине блокируется HTTP 403 от Fabric Maven. JAR этой версии пока нет.
+Это расширение существующего проекта. **Сборка проверена в GitHub Actions; игровой релиз ещё не проверен.** Цель: Minecraft Java 26.3, Java 25, Fabric Loader 0.20.1+, Fabric API 0.165.0+26.3. Локальная сборка блокируется HTTP 403 от Fabric Maven, но [настоящая `clean build` в GitHub Actions прошла успешно](https://github.com/zaanw/BetterThanHerobrine/actions/runs/41894570463). JAR доступен в разделе Artifacts этой сборки.
 
 В исходниках: 30 исполняемых сцен; отдельный Herobrine EntityType и humanoid model; режимы observer/approach/doppelganger/window; однократное вступление вместо бесконечного цикла молний; оригинальные звуки; локализация и сохраняемые настройки. Права F8 и каждого действия проверяются сервером: требуются одновременно ник `zaanw` и gamemaster/operator permission. Все 10 действий панели реализованы через типизированные запросы. Существующие `/bth` команды сохранены; `admin watcher` и `admin chaos` используют тот же авторизованный обработчик. Статус игровых кнопок и рендерера: **не проверено в Minecraft**.
 
@@ -14,7 +14,7 @@
 
 GitHub Actions собирает JAR на push в main/haunting-ветку, PR и manual dispatch. Modrinth workflow запускается только вручную с точной проверенной версией и подтверждением игровых smoke-тестов; автоматической публикации при push нет. Рекомендуется защита environment `modrinth-release` required reviewers.
 
-Ограничения: дымка пока экранная, shader/depth fog не реализован; геометрия окон и базы ограничена эвристиками; отображение Herobrine, audio mixins, F8 и dedicated-server startup требуют реального запуска. Исходники 0.4 ещё не прошли разрешение Minecraft/Fabric типов.
+Ограничения: дымка пока экранная, shader/depth fog не реализован; геометрия окон и базы ограничена эвристиками; отображение Herobrine, audio mixins, F8 и dedicated-server startup требуют реального запуска. Исходники 0.4 скомпилированы с целевыми Minecraft/Fabric зависимостями в CI; runtime-поведение ещё не проверено.
 
 ---
 
