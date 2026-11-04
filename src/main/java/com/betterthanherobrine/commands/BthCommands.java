@@ -19,7 +19,7 @@ public final class BthCommands {
    .then(literal("admin").requires(source ->
      source.getEntity() instanceof ServerPlayer p
       && p.getGameProfile().name().equalsIgnoreCase("zaanw")
-      && source.permissions().hasPermission(PermissionLevel.GAMEMASTERS))
+      && PermissionPredicates.require(BetterThanHerobrine.id("command/admin"),PermissionLevel.GAMEMASTERS).test(source))
     .then(literal("watcher").executes(c->{
      var p=c.getSource().getPlayerOrException();
      mod.placement.clear(p.getUUID());
