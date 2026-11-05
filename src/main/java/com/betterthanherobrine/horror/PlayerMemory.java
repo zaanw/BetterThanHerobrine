@@ -6,7 +6,7 @@ public final class PlayerMemory {
  public final ArrayDeque<String> recentEvents=new ArrayDeque<>();
  public long age, nextEvent=0, quietUntil=0;
  public double tension=0, vigilance=0;
- public int encounters=0;
+ public int encounters=0, sightings=0;
  public float lastYaw;
  public String lastEvent="";
  public final Map<String,Long> cooldowns=new HashMap<>();

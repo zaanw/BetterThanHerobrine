@@ -138,7 +138,15 @@ public final class BetterThanHerobrine implements ModInitializer {
   boolean ok=true;String details="";
   switch(action){
    case OPEN -> {}
-   case SPAWN -> {if(!config.enabled||config.entityFrequency==0)ok=false;else{placement.clear(p.getUUID());ok=placement.spawn(p,p.position().add(p.getLookAngle().scale(20)),45,"observer");}}
+   case SPAWN -> {
+    if(!config.enabled||config.entityFrequency==0)ok=false;
+    else{
+     placement.clear(p.getUUID());
+     Vec3 flatLook=Vec3.directionFromRotation(0,p.getYRot());
+     ok=placement.spawn(p,p.position().add(flatLook.scale(24)),45,"observer");
+     if(!ok)details="No visible, loaded ground found ahead. Try an open field.";
+    }
+   }
    case REMOVE -> placement.clearAll();
    case RANDOM -> {
     List<String> ids=director.eventIds();String chosen=ids.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(ids.size()));
@@ -152,7 +160,7 @@ public final class BetterThanHerobrine implements ModInitializer {
    case RESET -> {stopAll(p);director.clear();save();}
    case STOP -> stopAll(p);
   }
-  if(!ok)details="bth.busy";
+  if(!ok&&details.isEmpty())details="bth.busy";
   sendAdminState(p,action==AdminRequest.Action.OPEN,details,true);return ok;
  }
  public void stopAll(ServerPlayer caller){

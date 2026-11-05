@@ -1,60 +1,33 @@
-# BetterThanHerobrine — CLASSIC (0.5.0-beta.1)
+# BetterThanHerobrine — Classic Sightings 0.5.1-beta.1
 
-An experimental Minecraft horror mod built around the older Herobrine legends.
-It stays close to vanilla Minecraft: no forced "joined the game" message,
-no lightning spam, no jumpscare overlays. A distant silhouette or a sound
-in an empty cave should be unusual enough to remember.
+Work-in-progress for Minecraft Java 26.3 / Fabric. Developed from the
+Classic 0.5 branch; the original main and 0.4 branches remain intact.
 
-**Development branch:** classic-rework (based on haunting-0.4.0-beta.1).
-This is NOT an approved Modrinth release. CI checks compilation and deterministic
-simulation tests; Minecraft client/server runtime behavior still needs testing.
+This build fixes the main weakness of Classic: a scene could spawn an observer
+behind solid terrain and still count as a real encounter.
 
-### What this implementation actually does
+- Short-lived Herobrine sightings now search only **already-loaded** ground,
+  prefer the player's forward arc, and require a clear raycast.
+- The second eligible encounter favors a Herobrine sighting when the player
+  hasn't received one yet, subject to contextual conditions and availability.
+- Both the search and first-sighting scheduling have deterministic tests.
+- The old F8 Spawn button attempts a flat-direction, 24-block sighting,
+  and reports when no suitable position is found instead of silently failing.
+- No terrain edits, structure damage, forced join messages or lightning spam.
+- The server persists sighting attempts and enforces admin permissions.
 
-- Original Herobrine entity with a separate model/texture. Observes from a distance
-  and can vanish after the player notices it and looks away.
-- 12 contextual, bounded scenes: distant figures, tree-line and cave sightings,
-  unusual footsteps, cave echoes, sounds near villages, and a window encounter.
-- Long randomized quiet periods (4–12 minutes after a completed scene) with a
-  separately randomized initial delay. The first seconds are intentionally normal.
-- No forced chat introduction, no ambient channel suppression, no automatic
-  fog/tint/distortion scenes and no damaging edits to the world.
-- Server-authorized F8 debug UI and event testing commands. The old "chaos"
-  action now triggers a harmless distant sighting.
-- EN/RU localization, local client preferences, persisted event scheduling.
+**Limitations:** A scheduled Herobrine scene can still fail to spawn if the
+world has no safe, loaded, visible ground. Its count tracks *attempts*, not
+confirmed visible sightings. No gameplay screenshots or runtime tests have
+been made. Real-world terrain edits and physical crosses are not implemented.
 
-**Not implemented:** permanent or temporary tunnels, missing leaves, physical
-block crosses, a full environmental investigation system. The rare unknown_symbol
-event is only a short-lived ash-particle illusion; it does not place blocks.
-We prefer telling the truth over promising mechanics that are not in the JAR.
+Gameplay behavior and compatibility require manual testing after a successful
+CI build. Use a copy of a world for initial testing.
 
-### Platform
+- H: local settings (Subtle, Classic, Frequent)
+- F8: authorized admin panel for username zaanw **and** operator permission
+- /bth event distant_figure: operator-triggered test
+- /bth admin watcher: debug spawn
+- /bth admin clear: stop all events
 
-Minecraft Java **26.3** / Fabric Loader **0.20.1+** /
-Fabric API **0.165.0+26.3** / Java **25**.
-
-Build: ./gradlew clean build (Java 25 + network access).
-The GitHub workflow "Build BetterThanHerobrine JAR" runs this command,
-independent Director tests and asset integrity checks on classic-* pushes.
-The workflow artifact contains a JAR inside a ZIP; install the JAR in Prism
-and verify it in a **copy of a survival world** before release.
-
-### In game
-
-- **H**: client settings (choose Subtle, Classic, or Frequent).
-- **F8**: server-authorized developer panel; access is restricted to the
-  zaanw username AND server gamemaster/operator permission.
-- /bth status: basic status.
-- /bth event distant_figure: manually trigger a sighting, operator only.
-- /bth admin watcher: manually spawn Herobrine, authorized developer only.
-- /bth admin clear: stop events, authorized developer only.
-
-Server and client must both have this mod and Fabric API installed.
-Settings are stored in config/betterthanherobrine-*.properties; old saved
-settings are preserved, so use the **Classic** preset if you previously selected
-Nightmare. The mod does not contact any external server or collect user data.
-
-[Manual test checklist](docs/CLASSIC-VALIDATION.md) ·
-[0.4 development notes](docs/HAUNTING-VALIDATION.md)
-
-Created by **zaan**.
+For previous details: [Classic documentation](docs/CLASSIC-VALIDATION.md).

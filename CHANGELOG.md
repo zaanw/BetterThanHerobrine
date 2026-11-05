@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 0.5.1-beta.1 — CLASSIC SIGHTINGS (experimental)
+
+- More reliable observer placement with a clear player-visible raycast and
+  wider ground search limited to currently loaded chunks.
+- First observer scheduling no longer gets lost behind endless ambience-only
+  events; sighting attempts are remembered across restarts.
+- Fixed F8 debug spawn direction when looking up or down; failure is reported.
+- Added pure geometry and scheduling regression checks. CI completion and
+  Minecraft runtime verification are tracked separately.
+- No changes to the production main or previous release branches.
+
+# CHANGELOG
+
 ## 0.5.0-beta.1 — CLASSIC REWORK (development branch; runtime not yet verified)
 
 - Replaced 30 noisy scenes with 12 curated classic encounters; no scripted

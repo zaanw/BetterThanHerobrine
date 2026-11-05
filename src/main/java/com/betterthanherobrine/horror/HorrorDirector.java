@@ -49,6 +49,13 @@ public final class HorrorDirector {
    while(eligible.isEmpty()&&m.recentEvents.size()>1){
     m.recentEvents.removeFirst();eligible=Events.ALL.stream().filter(e->eligible(e,c,m)).toList();
    }
+   // A handful of quiet cues should lead to an actual sighting. On the
+   // second natural encounter, favor a contextual Herobrine event if possible.
+   // This is still subject to biome, visibility, cooldown and entity settings.
+   if(m.sightings==0&&m.encounters>=1){
+    List<HorrorEvent> entityOptions=eligible.stream().filter(HorrorEvent::hasEntity).toList();
+    if(!entityOptions.isEmpty())eligible=entityOptions;
+   }
    int total=eligible.stream().mapToInt(HorrorEvent::weight).sum();if(total==0)continue;
    int chosen=random.nextInt(total);
    for(var e:eligible){chosen-=e.weight();if(chosen<0){start(id,e,c,m);break;}}
@@ -74,6 +81,7 @@ public final class HorrorDirector {
  }
  private void start(UUID id,HorrorEvent event,Context c,PlayerMemory m){
   active.add(new Scene(id,event,c.second(),new HashSet<>()));m.lastEvent=event.id();m.encounters++;
+  if(event.hasEntity())m.sightings++;
   m.recentEvents.addLast(event.id());if(m.recentEvents.size()>4)m.recentEvents.removeFirst();
   m.cooldowns.put(event.id(),c.second()+event.cooldown());
   // 4–12 minutes after an encounter before another can begin, independent of

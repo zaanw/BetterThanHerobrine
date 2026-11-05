@@ -12,7 +12,8 @@ public final class MemoryStore {
    p.setProperty(k+"introduced",""+m.introduced);
    p.setProperty(k+"recent",String.join(",",m.recentEvents));
    p.setProperty(k+"age",""+m.age);p.setProperty(k+"tension",""+m.tension);
-   p.setProperty(k+"encounters",""+m.encounters);p.setProperty(k+"last",m.lastEvent);
+   p.setProperty(k+"encounters",""+m.encounters);p.setProperty(k+"sightings",""+m.sightings);
+   p.setProperty(k+"last",m.lastEvent);
    p.setProperty(k+"quiet",""+Math.max(0,m.quietUntil-now));
    p.setProperty(k+"next",""+Math.max(0,m.nextEvent-now));
    p.setProperty(k+"chunks",m.chunks.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(",")));
@@ -35,7 +36,9 @@ public final class MemoryStore {
    m.age=Math.max(0,Long.parseLong(p.getProperty(k+"age")));
    m.tension=Math.clamp(Double.parseDouble(p.getProperty(k+"tension","0")),0,99);
    if(!Double.isFinite(m.tension))throw new NumberFormatException("non-finite tension");
-   m.encounters=Math.max(0,Integer.parseInt(p.getProperty(k+"encounters","0")));m.lastEvent=p.getProperty(k+"last","");
+   m.encounters=Math.max(0,Integer.parseInt(p.getProperty(k+"encounters","0")));
+   m.sightings=Math.max(0,Integer.parseInt(p.getProperty(k+"sightings","0")));
+   m.lastEvent=p.getProperty(k+"last","");
    m.nextEvent=now+Math.clamp(Long.parseLong(p.getProperty(k+"next","0")),0,3600);
    m.quietUntil=now+Math.clamp(Long.parseLong(p.getProperty(k+"quiet","0")),0,3600);
    for(String s:p.getProperty(k+"chunks","").split(","))if(!s.isBlank()&&m.chunks.size()<256)m.chunks.add(Long.parseLong(s));

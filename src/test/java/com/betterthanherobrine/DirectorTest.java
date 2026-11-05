@@ -15,6 +15,15 @@ public final class DirectorTest {
   for(var event:Events.ALL)for(var cue:event.cues())
    check(cue.kind()!=Cue.Kind.JOIN&&cue.kind()!=Cue.Kind.TINT&&cue.kind()!=Cue.Kind.FOG&&cue.kind()!=Cue.Kind.DISTORT&&cue.kind()!=Cue.Kind.SILENCE,
     "No forced intro, intrusive screen effects or fake ambience suppression");
+  var offsets=SightingGeometry.offsets(new Random(123));
+  check(offsets.size()==49,"Finite ground search");
+  check(offsets.getFirst().x()==0&&offsets.getFirst().z()==0,"Center candidate first");
+  for(var offset:offsets)check(Math.hypot(offset.x(),offset.z())<=11.21,"Ground search bounded");
+  check(SightingGeometry.inFront(0,0,20),"South is in front of yaw zero");
+  check(!SightingGeometry.inFront(0,0,-20),"North is behind yaw zero");
+  check(SightingGeometry.inFront(90,-20,0),"West is in front of yaw 90");
+  check(!SightingGeometry.inFront(90,20,0),"East is behind yaw 90");
+  check(!SightingGeometry.inFront(0,0,0),"Zero displacement is not a sighting");
   for(String name:List.of("zaanw","ZAANW","za anw","another",""))for(boolean permission:List.of(true,false))
    check(AdminPolicy.allowed(name,permission)==(permission&&name.equalsIgnoreCase("zaanw")),"Server permission + exact name");
   for(int seed=0;seed<64;seed++){
@@ -29,6 +38,19 @@ public final class DirectorTest {
     }
    }
    check(emitted>0,"A quiet single-player world can eventually produce a clue");
+  }
+  // At most one ambience-only encounter before scheduling a first observer
+  // in open, populated, single-player context. This does not simulate geometry.
+  for(int seed=0;seed<32;seed++){
+   var planned=new HorrorDirector(new HorrorConfig(),new Random(seed));
+   UUID newcomer=new UUID(9,seed);
+   for(int second=0;second<2400;second++){
+    var flat=new Context(second,6000,false,false,false,false,false,false,15,0,second/16,0,true,false,false,false,64);
+    planned.tick(Map.of(newcomer,flat));
+    if(planned.memory(newcomer).sightings>0)break;
+   }
+   check(planned.memory(newcomer).sightings>0,"First figure scheduled in open single-player world");
+   check(planned.memory(newcomer).encounters<=2,"No long sequence of just noises");
   }
   Set<String> ids=new HashSet<>();for(var e:Events.ALL){check(ids.add(e.id()),"Unique ID "+e.id());check(e.duration()<=600,"Bounded scene");}
   // Test every stage, not just every event name. Force scenes and check exact cue delivery once.
@@ -87,6 +109,7 @@ public final class DirectorTest {
    check(restored.memory(id).introduced==d.memory(id).introduced,"Persist introduction phase");
    check(restored.memory(id).age==d.memory(id).age,"Persist age");
    check(restored.memory(id).encounters==d.memory(id).encounters,"Persist encounters");
+   check(restored.memory(id).sightings==d.memory(id).sightings,"Persist sighting attempts");
    check(restored.memory(id).lastEvent.equals(d.memory(id).lastEvent),"Persist repeat prevention");
    check(restored.memory(id).chunks.equals(d.memory(id).chunks),"Persist exploration");
    check(restored.memory(id).nextEvent>=0&&restored.memory(id).nextEvent<=3600,"Rebase cooldown across restart");
