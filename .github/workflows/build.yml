@@ -1,7 +1,7 @@
 name: Build BetterThanHerobrine JAR
 on:
   push:
-    branches: [main, 'haunting-*']
+    branches: [main, 'haunting-*', 'classic-*']
   pull_request:
   workflow_dispatch:
 permissions:

@@ -8,14 +8,13 @@ import java.util.Properties;
 public final class HorrorConfig {
  public boolean enabled=true, worldAnomalies=true, atmosphericSounds=true, visualEffects=true,
   screenEffects=true, reducedVisuals=false, performanceMode=false, debug=false;
- public double intensity=1, entityFrequency=1, fogIntensity=.45, volume=.65;
- public int maxActiveEvents=4, graceSeconds=20;
+ public double intensity=1, entityFrequency=1, fogIntensity=.2, volume=.55;
+ public int maxActiveEvents=4, graceSeconds=60;
  public void preset(String name) {
   switch(name){
-   case "Low" -> {intensity=.55;entityFrequency=.5;fogIntensity=.2;volume=.4;}
-   case "High" -> {intensity=1.35;entityFrequency=1.3;fogIntensity=.6;volume=.75;}
-   case "Nightmare" -> {intensity=1.85;entityFrequency=1.85;fogIntensity=.8;volume=.85;}
-   default -> {intensity=1;entityFrequency=1;fogIntensity=.45;volume=.65;}
+   case "Subtle" -> {intensity=.55;entityFrequency=.7;fogIntensity=.1;volume=.4;}
+   case "Frequent" -> {intensity=1.25;entityFrequency=1.35;fogIntensity=.3;volume=.7;}
+   default -> {intensity=1;entityFrequency=1;fogIntensity=.2;volume=.55;}
   }
  }
  public void validate() {

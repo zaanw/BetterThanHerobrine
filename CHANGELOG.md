@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## 0.5.0-beta.1 — CLASSIC REWORK (development branch; runtime not yet verified)
+
+- Replaced 30 noisy scenes with 12 curated classic encounters; no scripted
+  join message, forced fog, tint, distortion, music suppression or lightning.
+- Added a quiet first 100–240 seconds and randomized 4–12 minute cooldowns
+  between scenes; high values in older Nightmare config cannot override pacing.
+- Reduced intensity of cue sounds and made sightings distant and contextual.
+  Watchers vanish after being noticed and then looked away from.
+- Replaced four overblown presets with Subtle, Classic and Frequent; tuned the
+  default volume and grace period without overwriting existing user config.
+- Legacy admin "chaos" invokes a single distant sighting instead of an
+  unavailable Nightmare scene. F8 server-side access checks stay in place.
+- Added deterministic first-session and non-spam checks; preserved previous
+  permission, persistence, scene-cap and cleanup regression checks.
+- 0.4 remains untouched on haunting-0.4.0-beta.1; main is untouched.
+- **CI and in-game tests must be checked before claiming this version works.**
+
+# CHANGELOG
+
 ## 0.4.0-beta.1 — THE HAUNTING (CI-сборка пройдена, игровые тесты ожидаются)
 
 - Сохранены и расширены существующие системы: 18 → 30 исполняемых сцен, контекст деревень, окон и добычи блоков.

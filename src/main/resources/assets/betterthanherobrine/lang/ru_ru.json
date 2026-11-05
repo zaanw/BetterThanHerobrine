@@ -28,7 +28,7 @@
   "bth.admin.spawn": "Вызвать Херобрина",
   "bth.admin.remove": "Убрать Херобрина",
   "bth.admin.random": "Случайное событие",
-  "bth.admin.nightmare": "Начать кошмар",
+  "bth.admin.nightmare": "Показать фигуру вдали",
   "bth.admin.stop": "Остановить все события",
   "bth.admin.debug": "Переключить отладочный оверлей",
   "bth.admin.entities": "Показать активные сущности",

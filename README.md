@@ -1,123 +1,60 @@
-# BetterThanHerobrine
+# BetterThanHerobrine — CLASSIC (0.5.0-beta.1)
 
-## 0.4.0-beta.1 — THE HAUNTING, рабочая ветка
+An experimental Minecraft horror mod built around the older Herobrine legends.
+It stays close to vanilla Minecraft: no forced "joined the game" message,
+no lightning spam, no jumpscare overlays. A distant silhouette or a sound
+in an empty cave should be unusual enough to remember.
 
-Это расширение существующего проекта. **Сборка проверена в GitHub Actions; игровой релиз ещё не проверен.** Цель: Minecraft Java 26.3, Java 25, Fabric Loader 0.20.1+, Fabric API 0.165.0+26.3. Локальная сборка блокируется HTTP 403 от Fabric Maven, но [настоящая `clean build` в GitHub Actions прошла успешно](https://github.com/zaanw/BetterThanHerobrine/actions/runs/41894570463). JAR доступен в разделе Artifacts этой сборки.
+**Development branch:** classic-rework (based on haunting-0.4.0-beta.1).
+This is NOT an approved Modrinth release. CI checks compilation and deterministic
+simulation tests; Minecraft client/server runtime behavior still needs testing.
 
-В исходниках: 30 исполняемых сцен; отдельный Herobrine EntityType и humanoid model; режимы observer/approach/doppelganger/window; однократное вступление вместо бесконечного цикла молний; оригинальные звуки; локализация и сохраняемые настройки. Права F8 и каждого действия проверяются сервером: требуются одновременно ник `zaanw` и gamemaster/operator permission. Все 10 действий панели реализованы через типизированные запросы. Существующие `/bth` команды сохранены; `admin watcher` и `admin chaos` используют тот же авторизованный обработчик. Статус игровых кнопок и рендерера: **не проверено в Minecraft**.
+### What this implementation actually does
 
-- [Подробные изменения и результаты проверок](docs/HAUNTING-VALIDATION.md)
-- [Черновик Modrinth и условия ручной публикации](docs/MODRINTH.md)
-- [Сценарии](docs/MECHANICS.md)
+- Original Herobrine entity with a separate model/texture. Observes from a distance
+  and can vanish after the player notices it and looks away.
+- 12 contextual, bounded scenes: distant figures, tree-line and cave sightings,
+  unusual footsteps, cave echoes, sounds near villages, and a window encounter.
+- Long randomized quiet periods (4–12 minutes after a completed scene) with a
+  separately randomized initial delay. The first seconds are intentionally normal.
+- No forced chat introduction, no ambient channel suppression, no automatic
+  fog/tint/distortion scenes and no damaging edits to the world.
+- Server-authorized F8 debug UI and event testing commands. The old "chaos"
+  action now triggers a harmless distant sighting.
+- EN/RU localization, local client preferences, persisted event scheduling.
 
-Проверки: `JAVA_HOME=/path/to/jdk-25 ./tools/test-core.sh`, `python3 tools/check-assets.py`, затем `./gradlew clean build`. Для ресурсов требуются ffmpeg/ffprobe. В облаке `tools/cloud-install.sh` активирует установленную Java и настройки прокси/TLS. Запуск после успешной сборки: `./gradlew runClient` и `./gradlew runServer --args nogui`. Minecraft EULA пользователь принимает самостоятельно.
+**Not implemented:** permanent or temporary tunnels, missing leaves, physical
+block crosses, a full environmental investigation system. The rare unknown_symbol
+event is only a short-lived ash-particle illusion; it does not place blocks.
+We prefer telling the truth over promising mechanics that are not in the JAR.
 
-GitHub Actions собирает JAR на push в main/haunting-ветку, PR и manual dispatch. Modrinth workflow запускается только вручную с точной проверенной версией и подтверждением игровых smoke-тестов; автоматической публикации при push нет. Рекомендуется защита environment `modrinth-release` required reviewers.
+### Platform
 
-Ограничения: дымка пока экранная, shader/depth fog не реализован; геометрия окон и базы ограничена эвристиками; отображение Herobrine, audio mixins, F8 и dedicated-server startup требуют реального запуска. Исходники 0.4 скомпилированы с целевыми Minecraft/Fabric зависимостями в CI; runtime-поведение ещё не проверено.
+Minecraft Java **26.3** / Fabric Loader **0.20.1+** /
+Fabric API **0.165.0+26.3** / Java **25**.
 
----
+Build: ./gradlew clean build (Java 25 + network access).
+The GitHub workflow "Build BetterThanHerobrine JAR" runs this command,
+independent Director tests and asset integrity checks on classic-* pushes.
+The workflow artifact contains a JAR inside a ZIP; install the JAR in Prism
+and verify it in a **copy of a survival world** before release.
 
-Ниже — историческая документация первой итерации 0.1.0. Текущее состояние описано выше и в отчёте 0.4.
+### In game
 
+- **H**: client settings (choose Subtle, Classic, or Frequent).
+- **F8**: server-authorized developer panel; access is restricted to the
+  zaanw username AND server gamemaster/operator permission.
+- /bth status: basic status.
+- /bth event distant_figure: manually trigger a sighting, operator only.
+- /bth admin watcher: manually spawn Herobrine, authorized developer only.
+- /bth admin clear: stop events, authorized developer only.
 
-Автор: **zaan** · ID: `betterthanherobrine` · пакет: `com.betterthanherobrine`
+Server and client must both have this mod and Fabric API installed.
+Settings are stored in config/betterthanherobrine-*.properties; old saved
+settings are preserved, so use the **Classic** preset if you previously selected
+Nightmare. The mod does not contact any external server or collect user data.
 
-Психологический survival horror для Fabric. Это **первая итерация исходников**, а не проверенный релиз. Независимое ядро протестировано; Minecraft-интеграция ещё не скомпилирована и не запущена из-за сетевой блокировки Fabric Maven. Готового игрового JAR нет. Полные требования, включая 40+ различных событий, пока не выполнены.
+[Manual test checklist](docs/CLASSIC-VALIDATION.md) ·
+[0.4 development notes](docs/HAUNTING-VALIDATION.md)
 
-## Подтверждённая целевая платформа
-
-Официальная ветка [FabricMC/fabric-example-mod/26.3](https://github.com/FabricMC/fabric-example-mod/tree/91f19010a4e764f193fe50acfe2c8ee68f1f15cd) подтверждает следующий набор:
-
-| Компонент | Версия |
-|---|---|
-| Minecraft Java | 26.3 |
-| Java | 25 |
-| Fabric Loader | 0.20.1 |
-| Fabric API | 0.165.0+26.3 |
-| Fabric Loom | 1.19-SNAPSHOT |
-| Gradle Wrapper | 9.8.2 |
-| Имена классов | официальные имена Minecraft, без отдельного Yarn |
-
-Версии взяты из `gradle.properties`, `build.gradle`, `fabric.mod.json` и Wrapper официального примера, а не придуманы. Прямая проверка Mojang Manifest и Fabric Meta заблокирована HTTP 403. Доступность самих Maven-артефактов и бинарная совместимость этого проекта ещё не подтверждены. Loom пока остаётся upstream SNAPSHOT, поэтому полная воспроизводимость зависимостей не заявляется.
-
-## Что есть в коде
-
-- Horror Director на серверном потоке: NORMAL, UNEASY, WATCHED, DISTURBED, NIGHTMARE, плавное изменение напряжения.
-- Контекст: возраст сессий игрока, ночь, освещение, лес, дождь/гроза, подземелье, движение, взмахи рукой, игроки поблизости и ограниченная история чанков.
-- 18 исполняемых сцен, задержки между стадиями, cooldown, веса выбора, исключение немедленного повтора, общий лимит, 10 минут спокойствия в новом мире.
-- История отдельно для UUID внутри текущего мира, атомарная запись, восстановление задержек после перезапуска. Данные никуда не отправляются.
-- Серверная сущность-наблюдатель с собственным Goal: взгляд на игрока, обнаружение взгляда игрока, отход через навигацию, исчезновение при приближении, адаптация стороны появления к частым разворотам. Ограниченный поиск позиции, без загрузки чанков и случайных телепортов.
-- Ограничение наблюдателей, очистка при выходе, смене измерения, смерти и остановке сервера. Сущности не сохраняются в чанках.
-- S2C-сообщения персональных эффектов; сервер решает, когда происходят сцены. Никаких сетевых запросов самого мода.
-- Позиционные звуки с вариациями и затуханием, шесть типов оригинальных эффектов, 12 моно OGG, отдельная громкость мода в настройках.
-- Плавная экранная дымка/затемнение, частицы и символ из частиц. SILENCE временно уменьшает каналы ambient/music/weather без записи настроек Minecraft. Эта интеграция требует игровой проверки.
-- Меню по **H**: две страницы, сохранение настроек, пресеты Low/Normal/High/Nightmare; отдельные клиентский и серверный конфиги.
-- Английские и русские переводы меню, субтитров, сущности и сообщений команд.
-
-Описание сцен и ограничений: [docs/MECHANICS.md](docs/MECHANICS.md). Результаты проверок: [docs/VALIDATION.md](docs/VALIDATION.md).
-
-## Сборка
-
-Нужны **JDK 25** и доступ к официальным Maven/Minecraft серверам.
-
-```bash
-./gradlew build
-```
-
-На Windows: `gradlew.bat build`. При успешной сборке артефакты будут в `build/libs/`. В текущем окружении сборка завершилась ошибкой разрешения Loom; этот каталог не содержит релизного JAR.
-
-В подготовленной облачной среде:
-
-```bash
-cd /workspace/BetterThanHerobrine
-./tools/cloud-install.sh
-```
-
-Сценарий устанавливает Java 25 при необходимости, проверяет SHA-256 официального архива, использует существующий прокси и системное Java trust store, выполняет независимые проверки и настоящую сборку. Он не отключает TLS, не меняет исходники и не принимает EULA Minecraft.
-
-Тесты ядра без Minecraft-зависимостей:
-
-```bash
-JAVA_HOME=/path/to/jdk-25 ./tools/test-core.sh
-python3 tools/check-assets.py
-```
-
-Для проверки звуков нужны `ffmpeg` и `ffprobe`; они уже присутствуют в текущей облачной машине. `./gradlew check` также вызывает `directorTest`, но требует доступных Fabric/Minecraft зависимостей.
-
-## Запуск разработки после успешной сборки
-
-```bash
-./gradlew runClient
-./gradlew runServer --args nogui
-```
-
-Клиент и сервер должны иметь этот мод и совместимый Fabric API. Для сервера пользователь должен самостоятельно принять Minecraft EULA, если согласен с её условиями. Запуск не проверен; команды приведены как штатный workflow Loom, а не как доказательство работоспособности.
-
-Конфиги внутри Minecraft:
-
-- `config/betterthanherobrine-client.properties` — локальные эффекты и звук;
-- `config/betterthanherobrine-server.properties` — серверная политика, интенсивность, частота наблюдателя, лимиты и grace period;
-- `<world>/betterthanherobrine/memory.properties` — локальная история директора.
-
-В одиночной игре настройки меню передаются встроенному серверу через его поток. На выделенном сервере пользовательские настройки управляют персональными эффектами, а сущность и частота событий остаются под контролем оператора. Изменения серверного файла применяются после перезапуска. Значения `intensity` и `entityFrequency` — от 0 до 2, остальные коэффициенты — от 0 до 1. Скримеры ещё не реализованы; переключатель для отсутствующей механики в меню не предлагается.
-
-## Команды
-
-| Команда | Доступ |
-|---|---|
-| `/bth help` | любой игрок |
-| `/bth status` | игрок; скрытые уровни показываются только при debug |
-| `/bth debug` | gamemaster/operator; сохраняет debug |
-| `/bth summon` | gamemaster/operator; наблюдатель впереди игрока |
-| `/bth event <event_id>` | gamemaster/operator; сцена с соблюдением лимита |
-| `/bth intensity <0..2>` | gamemaster/operator; сохраняет интенсивность |
-| `/bth reset` | gamemaster/operator; сброс истории и эффектов вызывающего игрока |
-
-ID сцен доступны через автодополнение и [список механик](docs/MECHANICS.md). Команды написаны, но их регистрация и выполнение в Minecraft ещё не проверены.
-
-## Что ещё требуется
-
-40+ событий, несколько текстурных состояний и плавное растворение сущности, полноценный depth fog, собственное освещение глаз, визуальные искажения, совместные сценарии для группы, полноценная модель исследования базы/кровати/биомов и игровые smoke-тесты. Дымка сейчас накладывается на экран; это не изменение глубины настоящего тумана. «База» оценивается по пребыванию на месте, а mining — по взмаху рукой; точное распознавание этих действий пока не реализовано. Постоянные изменения блоков отсутствуют целиком.
-
-Работа с ресурсами: `python3 tools/generate-assets.py` воспроизводит собственные звуки и текстуру. Никакие чужие записи не использованы. Визуальный стиль и комфорт требуют проверки в игре.
+Created by **zaan**.

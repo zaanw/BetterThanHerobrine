@@ -145,7 +145,7 @@ public final class BetterThanHerobrine implements ModInitializer {
     ok=director.force(p.getUUID(),chosen,context(p));details=chosen;
    }
    case EVENT -> {ok=director.force(p.getUUID(),event,context(p));details=event;}
-   case NIGHTMARE -> {director.stop(p.getUUID());placement.clear(p.getUUID());ok=director.force(p.getUUID(),"the_encounter",context(p));}
+   case NIGHTMARE -> {director.stop(p.getUUID());placement.clear(p.getUUID());ok=director.force(p.getUUID(),"distant_figure",context(p));}
    case DEBUG -> {if(!overlays.add(p.getUUID()))overlays.remove(p.getUUID());}
    case ENTITIES -> details=String.join(" | ",placement.describe());
    case TIMERS -> details=String.join(" | ",director.timers(second));
@@ -170,7 +170,7 @@ public final class BetterThanHerobrine implements ModInitializer {
   if(summary.length()>4096)summary=summary.substring(0,4096);
   ServerPlayNetworking.send(p,new AdminState(allowed,open,allowed&&overlays.contains(p.getUUID()),allowed?placement.count():0,allowed?director.activeCount():0,summary));
  }
- /** Legacy /bth admin chaos now runs a finite, director-owned Nightmare scene. */
+ /** Legacy /bth admin chaos now triggers a finite, distant sighting; no nightmare spam. */
  public void adminChaos(ServerPlayer player){adminAction(player,AdminRequest.Action.NIGHTMARE,"");}
  public void emit(ServerPlayer player,Cue cue){
   if(cue.kind()!=Cue.Kind.CLEAR&&!config.enabled)return;

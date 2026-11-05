@@ -57,12 +57,11 @@ public final class SettingsScreen extends Screen {
   if(page==2&&minecraft.hasSingleplayerServer())value(0,"bth.frequency",()->c.entityFrequency/2,v->c.entityFrequency=v*2);
   button(width/2-148,height-73,296,(page+1)+" / 3",()->{page=(page+1)%3;clearWidgets();init();});
   int y=height-49;int x=width/2-148;
-  String[] presets={"Low","Normal","High","Nightmare"};
+  String[] presets={"Subtle","Classic","Frequent"};
   for(int i=0;i<presets.length;i++){
    String name=presets[i];
-   DarkButton option=new DarkButton(x+i*75,y,71,20,Component.literal(name),
+   DarkButton option=new DarkButton(x+i*100,y,96,20,Component.literal(name),
     b->{c.preset(name);saveAndRefresh();});
-   option.active=true;
    addRenderableWidget(option);
   }
   button(x,height-25,296,"OK",this::onClose);

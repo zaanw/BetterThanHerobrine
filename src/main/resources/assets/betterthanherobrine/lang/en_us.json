@@ -28,7 +28,7 @@
   "bth.admin.spawn": "Spawn Herobrine",
   "bth.admin.remove": "Remove Herobrine",
   "bth.admin.random": "Trigger Random Event",
-  "bth.admin.nightmare": "Start Nightmare Sequence",
+  "bth.admin.nightmare": "Trigger Distant Sighting",
   "bth.admin.stop": "Stop All Events",
   "bth.admin.debug": "Toggle Debug Overlay",
   "bth.admin.entities": "Show Active Entities",

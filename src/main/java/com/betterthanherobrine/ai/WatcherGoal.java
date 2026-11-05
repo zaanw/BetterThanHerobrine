@@ -19,9 +19,11 @@ public final class WatcherGoal extends Goal {
   double distance=entity.distanceToSqr(p);
   Vec3 toward=entity.position().subtract(p.getEyePosition()).normalize();
   boolean watched=p.getLookAngle().dot(toward)>.96&&p.hasLineOfSight(entity);
-  if(watched)seen=true;
+  // A glimpse is not enough: the observer vanishes only after a sustained
+  // look followed by turning away, not instantly on arbitrary camera movement.
+  if(watched)noticed=Math.min(1000,noticed+5);else noticed=Math.max(0,noticed-2);
+  if(noticed>=10)seen=true;
   if(seen&&!watched&&(entity.behavior()==WatcherEntity.Behavior.OBSERVER||entity.behavior()==WatcherEntity.Behavior.WINDOW)){entity.discard();return;}
-  if(watched)noticed+=5;else noticed=Math.max(0,noticed-2);
   if(distance<64||noticed>entity.watchPatience()){entity.discard();return;}
   if(!watched&&steps%20==0&&distance>144&&entity.behavior()==WatcherEntity.Behavior.APPROACH){
    entity.getNavigation().moveTo(p,.4);return;

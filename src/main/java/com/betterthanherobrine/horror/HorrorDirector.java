@@ -19,7 +19,7 @@ public final class HorrorDirector {
  public void stopAll(){active.clear();}
  public void stop(UUID id){disconnect(id);}
  public List<String> timers(long now){return active.stream().map(s->s.event.id()+": "+Math.max(0,s.event.duration()-(now-s.start))+"s").toList();}
- public List<String> eventIds(){return Events.ALL.stream().filter(e->!e.id().equals("the_haunting")).map(HorrorEvent::id).toList();}
+ public List<String> eventIds(){return Events.ALL.stream().map(HorrorEvent::id).toList();}
  public void disconnect(UUID id){active.removeIf(s->s.player.equals(id));}
  public void reset(UUID id){disconnect(id);memories.remove(id);}
  public void clear(){active.clear();memories.clear();}
@@ -30,18 +30,21 @@ public final class HorrorDirector {
   active.removeIf(s->!players.containsKey(s.player));
   for(var entry:players.entrySet()) {
    UUID id=entry.getKey();Context c=entry.getValue();PlayerMemory m=memory(id);m.observe(c);
-   if(!m.introduced&&c.second()>=m.nextEvent&&c.second()>=m.quietUntil&&m.age>=20+Math.floorMod(id.hashCode(),16)&&!isActive(id)&&active.size()<config.maxActiveEvents){
-    if(config.atmosphericSounds||config.entityFrequency>0||config.visualEffects){
-     start(id,Events.find("the_haunting").orElseThrow(),c,m);
-    }
+   // No scripted opening or fake join notification. The first clue waits 100–240 seconds
+   // in a new world; previous save data can extend, never shorten, that delay.
+   if(!m.introduced){
+    m.introduced=true;
+    m.nextEvent=Math.max(m.nextEvent,c.second()+100+random.nextInt(141));
    }
    double target=(Math.min(35,m.age/180.0)+(c.night()?13:0)+(c.underground()?12:0)+
     (c.light()<7?9:0)+(c.forest()?5:0)+(m.introduced?8:0)+Math.min(15,m.encounters*1.2)+Math.min(8,m.chunks.size()*.08)
     -(c.nearbyPlayers()>0?15:0))*config.intensity;
    if(c.second()<m.quietUntil)target=0;
    m.tension=Math.clamp(m.tension+Math.clamp(target-m.tension,-.35,.12),0,99);
-   if(!m.introduced||m.age<=config.graceSeconds||c.second()<m.nextEvent||c.second()<m.quietUntil||isActive(id))continue;
-   if(active.size()>=config.maxActiveEvents||random.nextDouble()>.025*config.intensity)continue;
+   if(m.age<=config.graceSeconds||c.second()<m.nextEvent||c.second()<m.quietUntil||isActive(id))continue;
+   // A scheduled window is not an automatic encounter; some windows pass quietly.
+   // Legacy Nightmare configs cannot turn Classic into an event-spam machine.
+   if(active.size()>=config.maxActiveEvents||random.nextDouble()>.06*Math.min(1.0,config.intensity))continue;
    List<HorrorEvent> eligible=Events.ALL.stream().filter(e->eligible(e,c,m)).toList();
    while(eligible.isEmpty()&&m.recentEvents.size()>1){
     m.recentEvents.removeFirst();eligible=Events.ALL.stream().filter(e->eligible(e,c,m)).toList();
@@ -54,10 +57,8 @@ public final class HorrorDirector {
    Scene s=it.next();Context c=players.get(s.player);long elapsed=c.second()-s.start;
    for(int i=0;i<s.event.cues().size();i++)if(!s.fired.contains(i)&&elapsed>=s.event.cues().get(i).delay()){
     Cue cue=s.event.cues().get(i);s.fired.add(i);
-    // Turning around repeatedly makes watchers favor the player's blind side.
-    if(cue.kind()==Cue.Kind.ENTITY&&memory(s.player).vigilance>.25)
-     cue=new Cue(cue.delay(),cue.kind(),cue.resource(),-Math.abs(cue.forward()),cue.side(),cue.up(),cue.strength(),cue.duration());
-    if(cue.kind()==Cue.Kind.JOIN)memory(s.player).introduced=true;
+    // Preserve authored placements; classic sightings are in the distance, not
+    // automatically teleported behind players who move their camera.
     out.add(new Emission(s.player,cue));
    }
    if(elapsed>=s.event.duration())it.remove();
@@ -75,8 +76,9 @@ public final class HorrorDirector {
   active.add(new Scene(id,event,c.second(),new HashSet<>()));m.lastEvent=event.id();m.encounters++;
   m.recentEvents.addLast(event.id());if(m.recentEvents.size()>4)m.recentEvents.removeFirst();
   m.cooldowns.put(event.id(),c.second()+event.cooldown());
-  m.nextEvent=c.second()+event.duration()+60+random.nextInt(120);
-  if(event.id().equals("false_safety"))m.quietUntil=c.second()+event.duration()+180;
+  // 4–12 minutes after an encounter before another can begin, independent of
+  // the event probability roll. Long quiet stretches are part of the design.
+  m.nextEvent=c.second()+event.duration()+240+random.nextInt(481);
  }
  /** Operator-triggered scenes bypass environmental eligibility, but never limits or the global off switch. */
  public boolean force(UUID id,String eventId,Context c){
